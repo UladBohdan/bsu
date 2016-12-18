@@ -12,13 +12,27 @@
 \usepackage[utf8]{inputenc}
 \usepackage[russian]{babel}
 \usepackage{ragged2e}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{etoc}
+\usepackage{array}
+\usepackage{indentfirst}
+
+\tolerance=1
+\emergencystretch=\maxdimen
+\hyphenpenalty=10000
+\hbadness=10000
+
+\usepackage{caption}
+\usepackage{graphicx}
+\graphicspath{ {images/} }
 
 \begin{document}
 
 \input{titlepage.tex}
 \setcounter{page}{2}
-\input{contents.tex}
 \input{annotation.tex}
+\input{contents.tex}
 
 \input{introduction.tex}
 \input{theory.tex}
