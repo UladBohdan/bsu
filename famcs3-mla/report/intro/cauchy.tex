@@ -1,10 +1,33 @@
-\section*{Задача Кашы для ўраўнення і для сістэмы}
-
-Рашыць задачу Кашы для АДУ-1 і сістэмы АДУ-1 усякімі рознымі спосабамі.\\
-Умовы задачы, які будуць надалей выкарыстоўвацца ў кодзе:
-\begin{verbatim}
-du_dx = lambda x, u: - u * math.cos(x) + math.sin(x) * math.cos(x)
-x_range = [0., 1.]
-x0 = 0
-u0 = -1
-\end{verbatim}
+Перад намі ставіцца задача набліжанымі метадамі на адрэзку $[x_0, x_l]$ рашыць задачу Кашы для АДУ-1:
+\begin{equation}
+    \begin{cases}
+        u^{\prime} = f(x,u), \hspace{10pt} x \in [x_0, x_l],\\
+        y(x_0) = u_0. \\
+    \end{cases}
+\end{equation}
+і задачу Кашы для сістэмы АДУ-1:
+\begin{equation}
+    \begin{cases}
+        u^{\prime} = f(x, u, v), \\
+        v^{\prime} = g(x, u, v), \hspace{10pt} x \in [x_0, x_l],\\
+        u(x_0) = u_0, \hspace{10pt} v(x_0) = v_0. \\
+    \end{cases}
+\end{equation} \\
+разбіваючы адрэзак на $N$ частак і знаходзячы значэнні функцыі ў $N$ адпаведных кропках.\par
+\\
+Ураўненне:
+\begin{equation}
+    \begin{cases}
+        u^{\prime} = -y cos(x) + sin(x)cos(x), \hspace{10pt} x \in [0, 1],\\
+        y(0) = -1 \\
+    \end{cases}
+\end{equation}
+Сістэма ўраўненняў:
+\begin{equation}
+    \begin{cases}
+        y^{\prime} = e ^{-(y^2+z^2)} + 2x, \\
+        z^{\prime} = 2y^2 + z, \hspace{10pt} x \in [0, 0.5], \\
+        y(0) = 0.5, \\
+        z(0) = 1. \\
+    \end{cases}
+\end{equation}

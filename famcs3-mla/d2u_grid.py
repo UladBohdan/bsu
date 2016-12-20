@@ -2,6 +2,8 @@ import matplotlib.pyplot as plt
 import math
 import numpy.linalg as alg
 
+EPS = 1e-6
+
 # Defining the problem
 k = lambda x: math.e**x
 q = lambda x: math.e**x
@@ -20,9 +22,6 @@ n = 10
 h = (x1 - x0) / n
 
 def tridiagonal_matrix_algo(matr, rhs):
-    print rhs
-    #x = alg.solve(matr, rhs)
-
     a = [0. for x in range(n+1)]
     c = [0. for x in range(n+1)]
     b = [0. for x in range(n+1)]
@@ -39,20 +38,18 @@ def tridiagonal_matrix_algo(matr, rhs):
     a[n] = -matr[n][n-1]
     c[n] = matr[n][n]
 
-
     al[1] = b[0] / c[0]
     be[1] = rhs[0] / c[0]
-    print be[1]
     for i in range(1, n):
         al[i+1] = b[i] / (c[i] - al[i]*a[i])
     for i in range(1, n+1):
         be[i+1] = (rhs[i] + be[i]*a[i]) / (c[i] - al[i]*a[i])
-        #print be[i+1]
 
     x[n] = be[n+1]
     for i in range(n-1, -1, -1):
         x[i] = al[i+1]*x[i+1] + be[i+1]
 
+    print "vector yi:"
     print x
     xi = []
     si = []
@@ -64,12 +61,15 @@ def tridiagonal_matrix_algo(matr, rhs):
     plt.show()
 
     # Checking the correctness of the solution of system of linear equations.
-    print "residual:"
+    print "checking the solution..."
     for i in range (0, n+1):
         temp = 0.
         for j in range(0, n+1):
             temp += matr[i][j] * x[j]
-        print temp - rhs[i]
+        if temp - rhs[i] > EPS:
+            print "incorrect"
+            return
+    print "correct"
     return
 
 def d2u_grid():
@@ -86,6 +86,7 @@ def d2u_grid():
 
     dk_dx = lambda x: math.e**x
 
+    # O(h^2)
     #matr[0][0] = - k(x0) / h - a0 - q(x0)*h/2 - dk_dx(x0)/2
     #matr[0][1] = k(x0) / h + dk_dx(x0) / 2
     #rhs[0] = -m0 - f(x0)*h/2
@@ -94,7 +95,7 @@ def d2u_grid():
     #matr[n][n] = - k(x1) / n - a1 + q(x1)*h/2 - dk_dx(x1)/2
     #rhs[n] = -m1 + f(x1)*h/2
 
-    # O(h)
+    # O(h) - seems to be the same as the version above.
     matr[0][0] = - k(x0) / h - a0
     matr[0][1] = k(x0) / h
     rhs[0] = -m0
