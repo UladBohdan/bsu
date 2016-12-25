@@ -1,1 +1,80 @@
 \section{Інтэрпаляцыйны метад Адамса}
+Інтэрпаляцыйны метад Адамса 2-га парадка дакладнасці пабудуем для сістэмы: $q = 1$.
+\begin{equation}
+    \sum _{i=-1}^{q} A_i(-i)^{j} = \frac{1}{j+1}, \hspace{10pt} j = \overline{0,2}
+\end{equation}
+З сістэмы вызначаем $A_i, i = \overline{-1, 1}$: $A_{-1} = \frac{5}{12}$, $A_0 = \frac{8}{12}$, $A_1 = -\frac{1}{12}$.\\
+Тады формулы для $y_{n+1}$, $z_{n+1}$ выглядаюць наступным чынам:
+\begin{equation} \label{eq:inter-adams}
+    \begin{cases}
+        y_{n+1} = y_n + \frac{h}{12}(A_{-1}f_{n+1} + A_0f_n + A_1f_{n-1}), \\
+        z_{n+1} = z_n + \frac{h}{12}(A_{-1}g_{n+1} + A_0g_n + A_1g_{n-1}), \\
+        h = \frac{x_1 - x_0}{N},\hspace{15pt} n = \overline{1, N-1}.
+    \end{cases}
+\end{equation}
+Сістэму \eqref{eq:inter-adams} рашаем метадам простай ітэрацыі з дакладнасцю $\epsilon = 10^{-5}$, то бок справядлівая формула \eqref{eq:simple-iterations-system} (метад простай ітэрацыі для сістэмы быў запісаны раней пры апісанні няяўнага метада Эйлера для сістэмы дыферэнцыяльных ураўненняў).
+
+{\small
+\begin{verbatim}
+def inter_adams_system(y_approx, z_approx):
+    yi = y_approx
+    zi = z_approx
+    a0 = 5./12
+    a1 = 8./12
+    a2 = -1./12
+    for i in range(2, len(grid)):
+        step = grid[i] - grid[i-1]
+        f_local = lambda x, y, z: a0 * f(x, y, z) + a1 * f(grid[i-1], yi[i-1], zi[i-1]) +
+                a2 * f(grid[i-2], yi[i-2], zi[i-2])
+        g_local = lambda x, y, z: a0 * g(x, y, z) + a1 * g(grid[i-1], yi[i-1], zi[i-1]) +
+                a2 * g(grid[i-2], yi[i-2], zi[i-2])
+        result = simple_iterations(yi[i-1], zi[i-1], step, f_local, g_local, grid[i], yi[i-1], zi[i-1])
+        yi.append(result[0])
+        zi.append(result[1])
+    return (yi, zi)
+
+def simple_iterations(base_y, base_z, step, f, g, x, y0, z0):
+    y_prev = y0
+    z_prev = z0
+    iter = MAX_ITERATIONS
+    while iter > 0:
+        y_new = base_y + step * f(x, y_prev, z_prev)
+        z_new = base_z + step * g(x, y_prev, z_prev)
+        iter -= 1
+        if abs(y_prev - y_new) < EPS and abs(z_prev - z_new) < EPS:
+            return (y_prev, z_prev)
+        y_prev = y_new
+        z_prev = z_new
+    print "simple iterations: no convergence"
+    return
+\end{verbatim}
+}
+
+{\small
+\begin{verbatim}
+Y:
+y(0.0) = 0.5
+y(0.05) = 0.516721916223
+y(0.1) = 0.53510175299
+y(0.15) = 0.556314365063
+y(0.2) = 0.580541312026
+y(0.25) = 0.60801529502
+y(0.3) = 0.639008967289
+y(0.35) = 0.673816952611
+y(0.4) = 0.712733545778
+y(0.45) = 0.756029244514
+y(0.5) = 0.803930618642
+Z:
+z(0.0) = 1.0
+z(0.05) = 1.076875
+z(0.1) = 1.1604277317
+z(0.15) = 1.2504319975
+z(0.2) = 1.34764324985
+z(0.25) = 1.45291660095
+z(0.3) = 1.5672330863
+z(0.35) = 1.69172315068
+z(0.4) = 1.82769143332
+z(0.45) = 1.97664202857
+z(0.5) = 2.14030342682
+\end{verbatim}
+}

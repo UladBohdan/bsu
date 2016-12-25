@@ -1,12 +1,85 @@
 \section{Яўны метад Эйлера}
-Ураўненне:
+\subsection*{Ураўненне}
 \begin{equation}
-    y_{n+1} = y_n + hf_n, \hspace{10pt} h = \frac{x_l-x_0}{N}, \hspace{10pt} n = \overline{0, N-1}. \\
+    y_{n+1} = y_n + hf_n, \hspace{10pt} h = \frac{x_1-x_0}{N}, \hspace{10pt} n = \overline{0, N-1}. \\
 \end{equation}
-Сістэма:
+
+{\small
+\begin{verbatim}
+def euler_explicit():
+    yi = [u0]
+    for i in range(1, len(grid)):
+        x = grid[i]
+        step = grid[i] - grid[i-1]
+        yi.append( yi[-1] + step*f(x,yi[-1]) )
+    return yi
+\end{verbatim}
+}
+
+{\small
+\begin{verbatim}
+Explicit Euler:
+y(0.0) = -1
+y(0.1) = -0.890566116932
+y(0.2) = -0.783813791161
+y(0.3) = -0.680701075953
+y(0.4) = -0.582136550445
+y(0.5) = -0.488975712673
+y(0.6) = -0.402016851326
+y(0.7) = -0.321996420037
+y(0.8) = -0.249584033262
+y(0.9) = -0.185377259419
+y(1.0) = -0.129896412005
+\end{verbatim}
+}
+
+\subsection*{Сістэма}
 \begin{equation}
 	\begin{cases}
 y_{n+1} = y_n + hf_n, \\
-z_{n+1} = z_n + hg_n, \hspace{10pt} h = \frac{x_l-x_0}{N}, \hspace{10pt} n = \overline{0, N-1}.
+z_{n+1} = z_n + hg_n, \hspace{10pt} h = \frac{x_1-x_0}{N}, \hspace{10pt} n = \overline{0, N-1}.
 	\end{cases}
 \end{equation}
+
+{\small
+\begin{verbatim}
+def euler_explicit_system():
+    yi = [y0]
+    zi = [z0]
+    for i in range(1, len(grid)):
+        step = grid[i] - grid[i-1]
+        yi.append(yi[i-1] + step * f(grid[i-1], yi[i-1], zi[i-1]))
+        zi.append(zi[i-1] + step * g(grid[i-1], yi[i-1], zi[i-1]))
+    return (yi, zi)
+\end{verbatim}
+}
+
+{\small
+\begin{verbatim}
+Explicit Euler for system:
+Y:
+y(0.0) = 0.5
+y(0.05) = 0.514325239843
+y(0.1) = 0.531409062083
+y(0.15) = 0.551334821493
+y(0.2) = 0.574239609375
+y(0.25) = 0.600311215312
+y(0.3) = 0.629780591884
+y(0.35) = 0.662909402276
+y(0.4) = 0.699973080276
+y(0.45) = 0.741241007894
+y(0.5) = 0.786956675174
+Z:
+z(0.0) = 1.0
+z(0.05) = 1.075
+z(0.1) = 1.15520304523
+z(0.15) = 1.24120275662
+z(0.2) = 1.33365990299
+z(0.25) = 1.43331801104
+z(0.3) = 1.54102126711
+z(0.35) = 1.65773468986
+z(0.4) = 1.78456631192
+z(0.45) = 1.92279085882
+z(0.5) = 2.07387422494
+\end{verbatim}
+}

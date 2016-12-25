@@ -1,1 +1,110 @@
 \section{Метад Рунге-Кутта}
+\subsection*{Ураўненне}
+
+Для ўраўнення маем наступныя параметры: $q=1$, $A_0=0$, $A_1=1$, $\alpha _1 = \beta _{10} = \frac{1}{2}$. \\
+Тады формулы для падліку $y_{n+1}$ маюць наступны выгляд:
+\[
+y_{n+1} = y_n + A_0 \varphi_0 + A_1 \varphi_1 = y_n + \varphi_1, \hspace{15pt} \varphi_0 = hf_n, \hspace{15pt}
+\varphi_1 = hf(x_n+ \frac{1}{2} h, y_n + \frac{1}{2} \varphi_0), \hspace{15pt} h = \frac{x_1-x_0}{N}, \hspace{10pt} n = \overline{0, N-1}
+\]
+
+{\small
+\begin{verbatim}
+def runge_kutta():
+    yi = [u0]
+    a0 = 0.
+    a1 = 1.
+    for i in range(1, len(grid)):
+        step = grid[i] - grid[i-1]
+        fi0 = step * f(grid[i-1], yi[i-1])
+        fi1 = step * f(grid[i-1] + step/2., yi[i-1] + fi0/2.)
+        y_new = yi[i-1] + a0 * fi0 + a1 * fi1
+        yi.append(y_new)
+    return yi
+\end{verbatim}
+}
+
+{\small
+\begin{verbatim}
+Runge-Kutta:
+y(0.0) = -1
+y(0.1) = -0.90012705443
+y(0.2) = -0.801268046565
+y(0.3) = -0.704408609366
+y(0.4) = -0.610514268109
+y(0.5) = -0.520520896324
+y(0.6) = -0.435325448379
+y(0.7) = -0.355777061627
+y(0.8) = -0.282668618599
+y(0.9) = -0.2167288559
+y(1.0) = -0.15861510132
+\end{verbatim}
+}
+
+\subsection*{Сістэма}
+
+Для сістэмы вызначаем параметры наступным чынам: $q=2$, $A_0 = \frac{1}{4}$, $A_1 = 0$, $A_2 = \frac{3}{4}$, $\alpha _1 = \frac{1}{3}$, $\alpha _2 = \frac{2}{3}$, $\beta _{10} = \frac{1}{3}$, $\beta _{20} = 0$, $\beta _{21} = \frac{2}{3}$. Будуем формулы падліку для $y_{n+1}$, $z_{n+1}$:\\
+\[ y_{n+1} = y_n + A_0 \varphi _{0y} + A_1 \varphi _{1y} + A_2 \varphi _{2y} = y_n + \frac{1}{4}\varphi_{0y} + \frac{3}{4}\varphi_{2y},\]
+\[ z_{n+1} = z_n + A_0 \varphi _{0z} + A_1 \varphi _{1z} + A_2 \varphi _{2z} = z_n + \frac{1}{4}\varphi_{0z} + \frac{3}{4}\varphi_{2z},\]
+\[ \varphi_{0y} = hf_n, \hspace{15pt} \varphi _{0z} = hg_n, \]
+\[ \varphi_{1y} = hf(x_n + \frac{1}{3}h, y_n + \frac{1}{3} \varphi_{0y}, z_n + \frac{1}{3} \varphi_{0z}), \hspace{15pt} \varphi_{1z} = hg(x_n + \frac{1}{3}h, y_n + \frac{1}{3} \varphi_{0y}, z_n + \frac{1}{3} \varphi_{0z}), \]
+\[ \varphi_{2y} = hf(x_n + \frac{2}{3}h, y_n + \frac{2}{3} \varphi_{1y}, z_n + \frac{2}{3} \varphi_{1z}), \hspace{15pt} \varphi_{2z} = hg(x_n + \frac{2}{3}h, y_n + \frac{2}{3} \varphi_{1y}, z_n + \frac{2}{3} \varphi_{1z}), \]
+\[ h = \frac{x_1-x_0}{N}, \hspace{10pt} n = \overline{0, N-1} \]
+
+{\small
+\begin{verbatim}
+def runge_kutta_system():
+    yi = [y0]
+    zi = [z0]
+    a0 = 0.25
+    a1 = 0.
+    a2 = 0.75
+    for i in range(1, len(grid)):
+        step = grid[i] - grid[i-1]
+
+        fi_0_y = step * f(grid[i-1], yi[i-1], zi[i-1])
+        fi_0_z = step * g(grid[i-1], yi[i-1], zi[i-1])
+        fi_1_y = step * f(grid[i-1] + step/3., yi[i-1] + fi_0_y/3., zi[i-1] + fi_0_z/3.)
+        fi_1_z = step * g(grid[i-1] + step/3., yi[i-1] + fi_0_y/3., zi[i-1] + fi_0_z/3.)
+        fi_2_y = step * f(grid[i-1] + 2.*step/3., yi[i-1] + 2.*fi_1_y/3., zi[i-1] + 2.*fi_1_z/3.)
+        fi_2_z = step * g(grid[i-1] + 2.*step/3., yi[i-1] + 2.*fi_1_y/3., zi[i-1] + 2.*fi_1_z/3.)
+
+        y_new = yi[i-1] + a0 * fi_0_y + a1 * fi_1_y + a2 * fi_2_y
+        yi.append(y_new)
+
+        z_new = zi[i-1] + a0 * fi_0_z + a1 * fi_1_z + a2 * fi_2_z
+        zi.append(z_new)
+
+    return (yi, zi)
+\end{verbatim}
+}
+
+{\small
+\begin{verbatim}
+Runge-Kutta for system:
+Y:
+y(0.0) = 0.5
+y(0.05) = 0.515656434837
+y(0.1) = 0.534026537105
+y(0.15) = 0.555232681281
+y(0.2) = 0.579455495042
+y(0.25) = 0.606927585975
+y(0.3) = 0.637921385868
+y(0.35) = 0.672731182208
+y(0.4) = 0.711650821141
+y(0.45) = 0.75495025345
+y(0.5) = 0.802855450697
+Z:
+z(0.0) = 1.0
+z(0.05) = 1.07768694392
+z(0.1) = 1.16115607324
+z(0.15) = 1.25107154582
+z(0.2) = 1.34818290595
+z(0.25) = 1.45334412973
+z(0.3) = 1.56753506833
+z(0.35) = 1.69188489268
+z(0.4) = 1.827696858
+z(0.45) = 1.97647353019
+z(0.5) = 2.13994167798
+\end{verbatim}
+}

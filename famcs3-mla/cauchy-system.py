@@ -15,7 +15,7 @@ g = dz_dx
 n = 10
 h = (x_range[1] - x_range[0]) / n
 grid = []
-for i in range(0, n):
+for i in range(0, n+1):
     grid.append(x_range[0] + i * h)
 
 # Constants for algorithms.

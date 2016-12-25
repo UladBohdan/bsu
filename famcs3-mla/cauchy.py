@@ -13,7 +13,7 @@ f = du_dx
 n = 10
 h = (x_range[1] - x_range[0]) / n
 grid = []
-for i in range(0, n):
+for i in range(0, n+1):
     grid.append(x_range[0] + i * h)
 
 # Exact solution of the problem.
@@ -41,9 +41,9 @@ def series():
     for i in range(1, len(grid)):
         x = grid[i]
         step = grid[i] - grid[i-1]
-        y = yi[-1]
+        y = yi[i-1]
         for j in range(1, k+1):
-            y += d_dx[j](x, y) / math.factorial(j) * step**j
+            y += d_dx[j](x, y) * step**j / math.factorial(j)
         yi.append(y)
     return yi
 
@@ -111,6 +111,11 @@ def output(header, x, y):
     for i in range(0, len(x)):
         print 'y({0}) = {1}'.format(x[i], y[i])
 
+def output_diff(header, x, u, y):
+    print header
+    for i in range(0, len(x)):
+        print 'u({0}) - y({1}) = {2}'.format(x[i], x[i], u[i] - y[i])
+
 def run_methods():
     y_exact = []
     for x in grid:
@@ -120,26 +125,32 @@ def run_methods():
 
     y_series = series()
     output("Series method:", grid, y_series)
+    output_diff("Series method", grid, y_exact, y_series)
     plt.plot(grid, y_series, color='blue')
 
     y_euler_explicit  = euler_explicit()
     output("Explicit Euler:", grid, y_euler_explicit)
+    output_diff("Explicit Euler:", grid, y_exact, y_euler_explicit)
     plt.plot(grid, y_euler_explicit, color='green')
 
     y_euler_implicit = euler_implicit()
     output("Implicit Euler: ", grid, y_euler_implicit)
+    output_diff("Implicit Euler: ", grid, y_exact, y_euler_implicit)
     plt.plot(grid, y_euler_implicit, color="black")
 
     y_predictor_corrector = predictor_corrector()
     output("Predictor-corrector:", grid, y_predictor_corrector)
+    output_diff("Predictor-corrector:", grid, y_exact, y_predictor_corrector)
     plt.plot(grid, y_predictor_corrector, color="brown")
 
     y_runge_kutta = runge_kutta()
     output("Runge-Kutta:", grid, y_runge_kutta)
+    output_diff("Runge-Kutta:", grid, y_exact, y_runge_kutta)
     plt.plot(grid, y_runge_kutta, color="yellow")
 
     y_extra_adams = extra_adams(y_predictor_corrector[:3])
     output("Extra Adams:", grid, y_extra_adams)
+    output_diff("Extra Adams:", grid, y_exact, y_extra_adams)
     plt.plot(grid, y_extra_adams, color="red")
 
     plt.show()
