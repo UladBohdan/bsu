@@ -1,0 +1,75 @@
+\section{Метад Рытца}
+Ідэя ў прадстаўленні рашэння ў наступным выглядзе:
+\begin{equation} \label{eq:1}
+    u_n(x) = \varphi_0(x) + \sum_{i=1}^n a_{i}\varphi_{i}(x)
+\end{equation}
+$\varphi_{i}$ - нейкія лінейна незалежныя функцыі, якія, напрыклад, маюць наступны выгляд:
+\begin{equation}
+    \begin{cases}
+        \varphi_i = x^{i+1}(x-1)^2, \hspace{10pt} i = \overline{1,n} \\
+        \varphi_0 = c_1 + c_{2}x \\
+    \end{cases}
+\end{equation}
+Каэфіцыэнты $c_{1}$, $c_{2}$ знаходзяцца з пачатковых умоваў.
+
+Такім чынам задача сводзіцца да пошуку каэфіцыэнтаў $a_{i}$ ураўнення \ref{eq:1}. Для гэтага скалярна дамножым ураўненне \ref{eq:1} на $\varphi_i$:
+\begin{equation}
+    \begin{cases}
+        \sum_{j=1}^n(A\varphi_j, \varphi_i)a_j = (\varphi_i, f) - (A\varphi_0, \varphi_i), \hspace{10pt} i = \overline{1,n} \\
+        (\varphi_i, f) = \int_0^1\varphi_i f dx \\
+        (A\varphi_j, \varphi_i) = \int_0^1(k(x)\varphi_i^{\prime}\varphi_j^{\prime} + q(x)\varphi_i\varphi_j) \\
+    \end{cases}
+\end{equation}
+
+Інтэгралы могуць быць падлічаныя, напрыклад, праз формулу Сімпсана:
+\begin{equation}
+    \int_a^b \approx \frac{h}{6}(f_{i-1} + 4f_{i-\frac{1}{2}} + f_i)
+\end{equation}
+
+Ніжэй прадстаўлены код на мове Python, які рашае вышэй пастаўленую задачу метадам Рытца:
+\begin{verbatim}
+def ritz():
+    # Defining fi and fi_dx.
+    fi = [fi0]
+    fi_dx = [fi0_dx]
+    for i in range(1, n_ritz+1):
+        fi_temp = lambda x, i: (x - x0)**(i + 1) * (x - x1)**2
+        fi.append(fi_temp)
+        fi_dx_temp = lambda x, i: (i + 1) * (x - x0)**i * 2 * (x - x1)
+        fi_dx.append(fi_dx_temp)
+
+    matr = [[0. for x in range(n_ritz)] for y in range(n_ritz)]
+    rhs = [0. for x in range(n_ritz)]
+
+    for i in range (1, n_ritz+1):
+        for j in range(1, n_ritz+1):
+            func1 = lambda x: k(x) * fi_dx[i](x, i) * fi_dx[j](x, j)
+                + q(x) * fi[i](x, i) * fi[j](x, j)
+            matr[i-1][j-1] = intergrate_simpson(x0, x1, func1)
+        func2 = lambda x: fi[i](x, i) * f(x)
+        func3 = lambda x: k(x) * fi_dx[i](x, i) * fi_dx[0](x, 0)
+            + q(x) * fi[i](x, i) * fi[i](x, 0)
+        rhs[i-1] = intergrate_simpson(x0, x1, func2)
+            - intergrate_simpson(x0, x1, func3)
+    a = alg.solve(matr, rhs)
+
+    x = []
+    for i in range(0, len(grid)):
+        temp = fi0(grid[i], 0)
+        for j in range(0, n_ritz):
+            temp += a[j] * fi[j+1](grid[i], j+1)
+        x.append(temp)
+
+    return x
+\end{verbatim}
+
+Рэалізацыя метада Сімпсана для прыблізнага падліку вызначанага інтэграла:
+\begin{verbatim}
+def intergrate_simpson(a, b, f):
+    sum = 0
+    h = (b - a) / n_integrate
+    for i in range (1, n_integrate):
+        sum += f(a + h*(i-1)) + 4 * f(a + h*(i-0.5)) + f(a + h * i)
+    sum = sum * h / 6.
+    return sum
+\end{verbatim}

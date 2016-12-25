@@ -1,0 +1,29 @@
+\documentclass{article}
+
+\usepackage{geometry}
+ \geometry{
+ a4paper,
+ total={170mm,257mm},
+ left=20mm,
+ top=20mm,
+ }
+
+\usepackage[utf8]{inputenc}
+\usepackage[russian]{babel}
+
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{verbatim}
+
+\begin{document}
+\input{titlepage.tex}
+\setcounter{page}{2}
+
+\input{intro.tex}
+
+\input{methods/ritz.tex}
+\input{methods/grids.tex}
+
+\input{conclusions.tex}
+
+\end{document}
