@@ -1,5 +1,4 @@
 import math
-#import matplotlib.pyplot as plt
 
 # Defining the problem (system of differential equations).
 dy_dx = lambda x, y, z: math.e**(-(y*y + z*z)) + 2 * x
