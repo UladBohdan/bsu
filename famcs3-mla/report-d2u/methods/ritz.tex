@@ -3,7 +3,7 @@
 \begin{equation} \label{eq:1}
     u_n(x) = \varphi_0(x) + \sum_{i=1}^n a_{i}\varphi_{i}(x)
 \end{equation}
-$\varphi_{i}$ - нейкія лінейна незалежныя функцыі, якія, напрыклад, маюць наступны выгляд:
+$\varphi_{i}$ - нейкія лінейна незалежныя, непарыўныя на $[a, b]$ функцыі, якія маюць, напрыклад, наступны выгляд:
 \begin{equation}
     \begin{cases}
         \varphi_i = x^{i+1}(x-1)^2, \hspace{10pt} i = \overline{1,n} \\
@@ -12,7 +12,7 @@ $\varphi_{i}$ - нейкія лінейна незалежныя функцыі,
 \end{equation}
 Каэфіцыэнты $c_{1}$, $c_{2}$ знаходзяцца з пачатковых умоваў.
 
-Такім чынам задача сводзіцца да пошуку каэфіцыэнтаў $a_{i}$ ураўнення \ref{eq:1}. Для гэтага скалярна дамножым ураўненне \ref{eq:1} на $\varphi_i$:
+Такім чынам задача сводзіцца да пошуку каэфіцыэнтаў $a_{i}$ ураўнення \eqref{eq:1}. Для гэтага скалярна дамножым ураўненне \eqref{eq:1} на $\varphi_i$:
 \begin{equation}
     \begin{cases}
         \sum_{j=1}^n(A\varphi_j, \varphi_i)a_j = (\varphi_i, f) - (A\varphi_0, \varphi_i), \hspace{10pt} i = \overline{1,n} \\
@@ -26,38 +26,33 @@ $\varphi_{i}$ - нейкія лінейна незалежныя функцыі,
     \int_a^b \approx \frac{h}{6}(f_{i-1} + 4f_{i-\frac{1}{2}} + f_i)
 \end{equation}
 
+Склаўшы сістэму лінейных алгебраічных ураўненняў адносна $a_i, i = \overline{1,n}$, рашаем яе, напрыклад, метадам Гаўса. Атрымаўшы значэнні $a_i$, падстаўляем іх у формулу \eqref{eq:1} і знаходзім функцыі $u_{n}(x)$. Пасля знаходзім значэнні $u_{n}(x)$ на вызначанай сетцы, што і з'ўляецца вынікам працы алгарытма.
+
 Ніжэй прадстаўлены код на мове Python, які рашае вышэй пастаўленую задачу метадам Рытца:
 \begin{verbatim}
 def ritz():
     # Defining fi and fi_dx.
-    fi = [fi0]
-    fi_dx = [fi0_dx]
-    for i in range(1, n_ritz+1):
-        fi_temp = lambda x, i: (x - x0)**(i + 1) * (x - x1)**2
-        fi.append(fi_temp)
-        fi_dx_temp = lambda x, i: (i + 1) * (x - x0)**i * 2 * (x - x1)
-        fi_dx.append(fi_dx_temp)
+    fi = lambda x, i: (x - x0)**(i + 1) * (x - x1)**2
+    fi_dx = lambda x, i: (i + 1) * (x - x0)**i * (x - x1)**2 + (x - x0)**(i + 1) * 2 * (x - x1)
 
+    # Allocating memory for system of linear equations.
     matr = [[0. for x in range(n_ritz)] for y in range(n_ritz)]
     rhs = [0. for x in range(n_ritz)]
 
     for i in range (1, n_ritz+1):
         for j in range(1, n_ritz+1):
-            func1 = lambda x: k(x) * fi_dx[i](x, i) * fi_dx[j](x, j)
-                + q(x) * fi[i](x, i) * fi[j](x, j)
+            func1 = lambda x: k(x) * fi_dx(x, i) * fi_dx(x, j) + q(x) * fi(x, i) * fi(x, j)
             matr[i-1][j-1] = intergrate_simpson(x0, x1, func1)
-        func2 = lambda x: fi[i](x, i) * f(x)
-        func3 = lambda x: k(x) * fi_dx[i](x, i) * fi_dx[0](x, 0)
-            + q(x) * fi[i](x, i) * fi[i](x, 0)
-        rhs[i-1] = intergrate_simpson(x0, x1, func2)
-            - intergrate_simpson(x0, x1, func3)
+        func2 = lambda x: fi(x, i) * f(x)
+        func3 = lambda x: k(x) * fi_dx(x, i) * fi0_dx(x) + q(x) * fi(x, i) * fi0(x)
+        rhs[i-1] = intergrate_simpson(x0, x1, func2) - intergrate_simpson(x0, x1, func3)
     a = alg.solve(matr, rhs)
 
     x = []
     for i in range(0, len(grid)):
-        temp = fi0(grid[i], 0)
+        temp = fi0(grid[i])
         for j in range(0, n_ritz):
-            temp += a[j] * fi[j+1](grid[i], j+1)
+            temp += a[j] * fi(grid[i], j+1)
         x.append(temp)
 
     return x

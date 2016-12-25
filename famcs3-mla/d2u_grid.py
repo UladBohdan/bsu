@@ -2,6 +2,8 @@ import matplotlib.pyplot as plt
 import math
 import numpy.linalg as alg
 
+import scipy.integrate as integrate
+
 EPS = 1e-6
 
 # Defining the problem.
@@ -16,14 +18,43 @@ x_range = [0., 1.]
 x0 = x_range[0]
 x1 = x_range[1]
 
+# is that a solution?
+exact_solution = lambda x: 1.141 * math.e**(-1.618*x) + 0.339 * math.e**(0.618*x) - math.e**(-2*x)
+
 # for Ritz algorithm.
 n_ritz = 5
 n_integrate = 100
-fi0 = lambda x, i: 0
-fi0_dx = lambda x, i: 0
+fi0 = lambda x: (exact_solution(1) - exact_solution(0)) * x + exact_solution(0)
+fi0_dx = lambda x: exact_solution(1) - exact_solution(0)
+#fi0 = lambda x: -1./(math.e + 2) - x/(math.e+2) + x*x/(2*math.e + 1)
+#fi0_dx = lambda x: -1./(math.e + 2) + 2.*x/(2*math.e + 1)
 
-# is that a solution?
-exact_solution = lambda x: -0.158 * math.e**(-1.618*x) + 0.018 * math.e**(0.618*x) - math.e**(-2*x)
+# OVERRIDING for var 3:
+'''k = lambda x: math.cos(x)**2 + 1
+q = lambda x: 1
+f = lambda x: math.sin(x)**2
+a0 = 1.
+m0 = 0.
+a1 = 1.
+m1 = 1.
+x_range = [0., 1.]
+fi0 = lambda x: 2/(math.cos(1)**2 + 4) + x/(math.cos(1)**2 + 4)
+fi0_dx = lambda x: 1./(math.cos(1)**2 + 4)
+n_integrate = 1000'''
+
+# OVERRIDING for var 11:
+'''k = lambda x: math.cos(x)**2
+q = lambda x: math.sin(2*x)
+f = lambda x: x * math.sin(2*x)
+a0 = 0.
+m0 = -1.
+a1 = 1.
+m1 = math.cos(1)**2
+x_range = [0., 1.]
+fi0 = lambda x: x - 1
+fi0_dx = lambda x: 1.
+n_integrate = 1000
+exact_solution = lambda x: x - 1'''
 
 # Algorithm parameters.
 n = 10
@@ -42,35 +73,27 @@ def intergrate_simpson(a, b, f):
 
 def ritz():
     # Defining fi and fi_dx.
-    fi = [fi0]
-    fi_dx = [fi0_dx]
-    for i in range(1, n_ritz+1):
-        fi_temp = lambda x, i: (x - x0)**(i + 1) * (x - x1)**2
-        fi.append(fi_temp)
-        fi_dx_temp = lambda x, i: (i + 1) * (x - x0)**i * 2 * (x - x1)
-        fi_dx.append(fi_dx_temp)
+    fi = lambda x, i: (x - x0)**(i + 1) * (x - x1)**2
+    fi_dx = lambda x, i: (i + 1) * (x - x0)**i * (x - x1)**2 + (x - x0)**(i + 1) * 2 * (x - x1)
 
+    # Allocating memory for system of linear equations.
     matr = [[0. for x in range(n_ritz)] for y in range(n_ritz)]
     rhs = [0. for x in range(n_ritz)]
 
     for i in range (1, n_ritz+1):
         for j in range(1, n_ritz+1):
-            func1 = lambda x: k(x) * fi_dx[i](x, i) * fi_dx[j](x, j) + q(x) * fi[i](x, i) * fi[j](x, j)
+            func1 = lambda x: k(x) * fi_dx(x, i) * fi_dx(x, j) + q(x) * fi(x, i) * fi(x, j)
             matr[i-1][j-1] = intergrate_simpson(x0, x1, func1)
-        func2 = lambda x: fi[i](x, i) * f(x)
-        func3 = lambda x: k(x) * fi_dx[i](x, i) * fi_dx[0](x, 0) + q(x) * fi[i](x, i) * fi[i](x, 0)
+        func2 = lambda x: fi(x, i) * f(x)
+        func3 = lambda x: k(x) * fi_dx(x, i) * fi0_dx(x) + q(x) * fi(x, i) * fi0(x)
         rhs[i-1] = intergrate_simpson(x0, x1, func2) - intergrate_simpson(x0, x1, func3)
     a = alg.solve(matr, rhs)
-    print "integrals:"
-    print matr
-    print rhs
-    print "AAA::", a
 
     x = []
     for i in range(0, len(grid)):
-        temp = fi0(grid[i], 0)
+        temp = fi0(grid[i])
         for j in range(0, n_ritz):
-            temp += a[j] * fi[j+1](grid[i], j+1)
+            temp += a[j] * fi(grid[i], j+1)
         x.append(temp)
 
     return x
@@ -143,11 +166,14 @@ def grid_algorithm():
     # O(h^2)
     matr[0][0] = - k(x0) / h - a0 - q(x0)*h/2 - (k(x0 + h) - k(x0))/(2 * h)
     matr[0][1] = k(x0) / h + (k(x0 + h) - k(x0))/(2 * h)
-    rhs[0] = -m0 - f(x0)*h/2
+    rhs[0] = - m0 - f(x0)*h/2
 
-    matr[n][n-1] = - k(x1) / h + (k(x1) - k(x1 - h))/(2 * h)
-    matr[n][n] = - k(x1) / n - a1 + q(x1)*h/2 + (k(x1) - k(x1 - h))/(2 * h)
+    matr[n][n-1] = + k(x1) / h - (k(x1) - k(x1 - h))/(2 * h)
+    matr[n][n] = - k(x1) / h - a1 - q(x1)*h/2 + (k(x1) - k(x1 - h))/(2 * h)
     rhs[n] = - m1 - f(x1)*h/2
+
+    #for i in range(0, n+1):
+    #    rhs[i] -= 0.12
 
     #matr[0][0] = - k(x0) / h - a0 - q(x0)*h
 

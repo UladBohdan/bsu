@@ -13,7 +13,9 @@
         u(x_0) = u_0, \hspace{10pt} v(x_0) = v_0. \\
     \end{cases}
 \end{equation} \\
-разбіваючы адрэзак на $N$ частак і знаходзячы значэнні функцыі ў $N$ адпаведных кропках.\par
+Вынікам працы кожнага алгарытма будзе разбіццё адрэзка $[x_0, x_l]$ на $N$ частак і падлік адпаведных гэтым кропкам набліжаных значэнняў функцыі $u(x)$ альбо сістэмы функцый $u(x), v(x)$.
+
+\subsection*{Умовы канкрэтнай задачы}
 Ураўненне:\\
 \begin{equation}
     \begin{cases}
@@ -30,3 +32,55 @@
         z(0) = 1. \\
     \end{cases}
 \end{equation}
+
+\subsection*{Вызначэнне ў кодзе}
+Ураўненне:
+\begin{verbatim}
+# Defining the Cauchy problem for equation.
+du_dx = lambda x, u: - u * math.cos(x) + math.sin(x) * math.cos(x)
+x_range = [0., 1.]
+x0 = 0
+u0 = -1
+
+f = du_dx
+
+# Defining a grid to make calculations on.
+n = 10
+h = (x_range[1] - x_range[0]) / n
+grid = []
+for i in range(0, n):
+    grid.append(x_range[0] + i * h)
+
+# Exact solution of the problem.
+exact_solution = lambda x: -1 + math.sin(x)
+
+# Some pre-calculations. k is for highest degree of derivations.
+k = 3
+d_dx = [
+    lambda x, u: u0,
+    lambda x, u: du_dx(x, u),
+    lambda x, u: u * math.sin(x) + math.cos(2 * x),
+    lambda x, u: u * math.cos(x) - 2 * math.sin(2 * x),
+    ]
+\end{verbatim}
+
+Сістэма ўраўненняў:
+\begin{verbatim}
+# Defining the problem (system of differential equations).
+dy_dx = lambda x, y, z: math.e**(-(y*y + z*z)) + 2 * x
+dz_dx = lambda x, y, z: 2 * y * y + z
+x_range = [0., 0.5]
+x0 = 0
+y0 = 0.5
+z0 = 1.
+
+f = dy_dx
+g = dz_dx
+
+# Defining the grid to make the calculations.
+n = 10
+h = (x_range[1] - x_range[0]) / n
+grid = []
+for i in range(0, n):
+    grid.append(x_range[0] + i * h)
+\end{verbatim}
