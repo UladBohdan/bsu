@@ -1,1 +1,125 @@
 \section{Метад сетак}
+
+Будуем сетку $\overline{\omega } _h = \{ x_i| \hspace{10pt} x_i = ih, i = \overline{0,N} \} $, $h = \frac{1}{N}$. Возьмем $N=10$.\par
+
+Складзем рознасны аналаг для дыферэнцыальнай задачы \eqref{eq:adu2-problem}: раскрыем дужкі ва ўраўненні і заменім аператары дыферэнцавання рознаснымі.
+\begin{equation}
+    k(x)u^{''}(x) + k{'}(x)u{'}(x) - q(x)u(x) = -f(x), \hspace{10pt} u{'} \approx u_{\overset{\circ}{x}}, \hspace{7pt} u{''} \approx u_{\overline{x} x}
+\end{equation}
+
+Атрымліваем:
+\begin{equation}
+    k_{x^{o}}u_{x^{o}} + k u_{\overline{x} x} -qu \approx -f. y(x_i) = y_i \approx u_i \Rightarrow k_{\overset{\circ}{x}}y_{\overset{\circ}{x}} + k y_{\overline{x} x} -qy = -f
+\end{equation}
+
+Паколькі ва ўраўненні прысутнічае другая вытворная, то мінімальны шаблон, якім мы можам абысціцся - трохкропкавы: $\{ x_{i-1}, x_i, x_{i+1} \} $. Атрымліваем наступную роўнасць:
+\begin{equation} \label{eq:grids1}
+    \frac{k_{i+1} - k_{i-1}}{2h} \frac{y_{i+1} - y_{i-1}}{2h} + k_i \frac{y_{i+1} - 2y_i + y_{i-1}}{h^{2}} - q_i y_i = - f_i, i = \overline{1, N-1}. \hspace{20pt}
+\end{equation}
+
+Для апраксімацыі гранічных умоваў будзем браць двухкропкавы шаблон і правую рознасную вытворную для першай гранічнай умовы і левую рознасную вытворную для другой гранічнай умовы адпаведна. Такім чынам, маем:
+\[
+    k_0 y_{x,0} = \alpha _0 y_0 - \mu _0, -k_N y_{\overline{x} , N} = \alpha _1 y_N - \mu _1
+\]
+\[
+    k_0 \frac{y_1 - y_0}{h} = \alpha _0 y_0 - \mu _0, -k_N \frac{y_N - y_{N-1}}{h} = \alpha _1 y_N - \mu _1
+\]
+
+Ацэнім хібнасць апраксімацыі ўсіх рознасных ураўненняў. Для гэтага ацэнім нявязку рознаснага ўраўнення на дакладным рашэнні.
+\begin{multline}
+\psi _{1,i} = \frac{k_{i+1} - k_{i-1}}{2h} \frac{u_{i+1} - u_{i-1}}{2h} + k_i \frac{u_{i+1} - 2u_i + u_{i-1}}{h^{2}} - q_i u_i + f_i = \\
+= \frac{1}{4h^2} (k_i + hk^{'}_i + \frac{h^2}{2} k^{''}_i + \mathcal{O}(h^3) - (k_i - hk^{'}_i + \frac{h^2}{2} k^{''}_i + \mathcal{O}(h^3)))(u_i + hu^{'}_i + \frac{h^2}{2} u^{''}_i + \mathcal{O}(h^3) - (u_i - hu^{'}_i + \frac{h^2}{2} u^{''}_i + \mathcal{O}(h^3))) + \\
++ \frac{k_i}{h^2}(u_i+hu^{'}_i + \frac{h^2}{2} u{''}_i + \frac{h^3}{6} u^{(3)}_i + \mathcal{O}(h^4) - 2u_i + u_i-hu^{'}_i + \frac{h^2}{2} u{''}_i - \frac{h^3}{6} u^{(3)}_i + \mathcal{O}(h^4)) -q_i u_i + f_i = ... = \\
+=  k^{'}_iu^{'}_i + \mathcal{O}(h^2) + k_i u^{''}_i + \mathcal{O}(h^2) -q_i u_i + f_i = \mathcal{O}(h^2)
+\end{multline}
+\begin{multline}
+\psi _2 = k_0\frac{u_1-u_0}{h} - \alpha _0 u_0 + \mu _0 = \frac{k_0}{h}(u_0 + hu^{'}_0 + \frac{h^2}{2} u^{''}_0 + \mathcal{O}(h^3) - u_0) - \alpha _0 u_0 + \mu _0 = \\
+= k_0 u^{'}_0 + \frac{k_0 h}{2} u^{''} _0 + \mathcal{O}(h^2) - \alpha _0 u_0 + \mu _0 = \frac{k_0 h}{2} u^{''} _0 + \mathcal{O}(h^2)
+\end{multline}
+\begin{multline}
+\psi _3 = -k_N\frac{u_N-u_{N-1}}{h} - \alpha _1 u_N + \mu _1 = -\frac{k_N}{h}(u_N - ( u_N -  hu^{'}_N + \frac{h^2}{2} u^{''}_N + \mathcal{O}(h^3))) - \alpha _1 u_N + \mu _1 = \\
+= -k_N u^{'}_N + \frac{k_N h}{2} u^{''} _N + \mathcal{O}(h^2) - \alpha _1 u_N + \mu _N = \frac{k_N h}{2} u^{''} _N + \mathcal{O}(h^2)
+\end{multline}
+Заўважым, што хібнасць гранічных умоваў мае парадак $\mathcal{O}(h)$. Зробім так, каб парадак гэтых умоваў быў $\mathcal{O}(h^2)$, для гэтага ўвядзем старэйшы каэфіцыэнт хібнасці ў гранічныя ўмовы. Выразім $u{''}$ з умовы: $u^{''} = \frac{1}{k} (-f+qu-k^{'}u^{'})$, а ў атрыманым выразе вытворныя першага парадка апраксімуем на мінімальным шаблоне з першым парадкам (для першай -- правая рознасная вытворная, для другой -- левая рознасная вытворная), у выніку атрымаем такія гранічныя ўмовы другога парадка:
+\begin{equation}
+    (\frac{h q_0}{2} + \alpha _0 + \frac{k_0 + k_1}{2h})y_0 - \frac{k_0 + k_1}{2h}y_1 = \mu _0 + \frac{h f_0}{2},
+\end{equation}
+\begin{equation}
+    -\frac{k_N + k_{N-1}}{2h} y_{N-1} + (\frac{k_N + k_{N-1}}{2h} + \alpha _1 + \frac{h q_N}{2}) y_N = \mu _1 + \frac{h f_N}{2}.
+\end{equation}
+Гэтыя дзве ўмовы разам з умовай \eqref{eq:grids1} утвараюць сістэму лінейных алгебраічных ураўненняў адносна $y_i, \hspace{7pt} i = \overline{0, N}$ з трохдыяганальнай матрыцай сістэмы. Такую сістэму можна эфектыўна рашыць метадам прагонкі.
+
+
+{\small
+\begin{verbatim}
+def grid_algorithm():
+    matr = [[0. for x in range(n+1)] for y in range(n+1)]
+    rhs = [0. for x in range(n+1)]
+    for i in range(1, n):
+        x = x0 + h * i
+        x_prev = x - h
+        x_next = x + h
+        matr[i][i-1] = k(x) / (h * h) - (k(x_next) - k(x_prev)) / (4 * h * h)
+        matr[i][i] = - 2 * k(x) / (h * h) - q(x)
+        matr[i][i+1] = (k(x_next) - k(x_prev)) / (4 * h * h) + k(x) / (h * h)
+        rhs[i] = - f(x)
+
+    matr[0][0] = - k(x0) / h - a0 - q(x0)*h/2 - (k(x0 + h) - k(x0))/(2 * h)
+    matr[0][1] = k(x0) / h + (k(x0 + h) - k(x0))/(2 * h)
+    rhs[0] = - m0 - f(x0)*h/2
+
+    matr[n][n-1] = + k(x1) / h - (k(x1) - k(x1 - h))/(2 * h)
+    matr[n][n] = - k(x1) / h - a1 - q(x1)*h/2 + (k(x1) - k(x1 - h))/(2 * h)
+    rhs[n] = - m1 - f(x1)*h/2
+
+    x = tridiagonal_matrix_algo(matr, rhs)
+    return x
+
+def tridiagonal_matrix_algo(matr, rhs):
+    a = [0. for x in range(n+1)]
+    c = [0. for x in range(n+1)]
+    b = [0. for x in range(n+1)]
+    al = [0. for x in range(n+2)]
+    be = [0. for x in range(n+2)]
+    x = [0. for x in range(n+1)]
+
+    for i in range(1, n):
+        a[i] = -matr[i][i-1]
+        b[i] = -matr[i][i+1]
+        c[i] = matr[i][i]
+    b[0] = -matr[0][1]
+    c[0] = matr[0][0]
+    a[n] = -matr[n][n-1]
+    c[n] = matr[n][n]
+
+    al[1] = b[0] / c[0]
+    be[1] = rhs[0] / c[0]
+    for i in range(1, n):
+        al[i+1] = b[i] / (c[i] - al[i]*a[i])
+    for i in range(1, n+1):
+        be[i+1] = (rhs[i] + be[i]*a[i]) / (c[i] - al[i]*a[i])
+
+    x[n] = be[n+1]
+    for i in range(n-1, -1, -1):
+        x[i] = al[i+1]*x[i+1] + be[i+1]
+
+    return x
+\end{verbatim}
+}
+
+{\small
+\begin{verbatim}
+Grid algorithm:
+y(0.0) = 0.481826972814
+y(0.1) = 0.523241027864
+y(0.2) = 0.55477193286
+y(0.3) = 0.579641357672
+y(0.4) = 0.600341552792
+y(0.5) = 0.618793677619
+y(0.6) = 0.636473802056
+y(0.7) = 0.654513001266
+y(0.8) = 0.673776717109
+y(0.9) = 0.694927551783
+y(1.0) = 0.718474844464
+\end{verbatim}
+}

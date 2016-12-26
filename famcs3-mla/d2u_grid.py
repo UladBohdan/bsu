@@ -28,6 +28,7 @@ fi0 = lambda x: (exact_solution(1) - exact_solution(0)) * x + exact_solution(0)
 fi0_dx = lambda x: exact_solution(1) - exact_solution(0)
 #fi0 = lambda x: -1./(math.e + 2) - x/(math.e+2) + x*x/(2*math.e + 1)
 #fi0_dx = lambda x: -1./(math.e + 2) + 2.*x/(2*math.e + 1)
+print "c1, c2: ", exact_solution(1) - exact_solution(0), exact_solution(0)
 
 # OVERRIDING for var 3:
 '''k = lambda x: math.cos(x)**2 + 1
@@ -126,17 +127,6 @@ def tridiagonal_matrix_algo(matr, rhs):
     for i in range(n-1, -1, -1):
         x[i] = al[i+1]*x[i+1] + be[i+1]
 
-    '''print "vector yi:"
-    print x
-    xi = []
-    si = []
-    for i in range(0, n+1):
-        xi.append(x0+h*i)
-        si.append(exact_solution(x0+h*i))
-    plt.plot(xi, x)
-    plt.plot(xi, si)
-    plt.show()'''
-
     # Checking the correctness of the solution of system of linear equations.
     print "checking the solution..."
     for i in range (0, n+1):
@@ -161,9 +151,6 @@ def grid_algorithm():
         matr[i][i+1] = (k(x_next) - k(x_prev)) / (4 * h * h) + k(x) / (h * h)
         rhs[i] = - f(x)
 
-    #dk_dx = lambda x: math.e**x
-
-    # O(h^2)
     matr[0][0] = - k(x0) / h - a0 - q(x0)*h/2 - (k(x0 + h) - k(x0))/(2 * h)
     matr[0][1] = k(x0) / h + (k(x0 + h) - k(x0))/(2 * h)
     rhs[0] = - m0 - f(x0)*h/2
@@ -172,28 +159,22 @@ def grid_algorithm():
     matr[n][n] = - k(x1) / h - a1 - q(x1)*h/2 + (k(x1) - k(x1 - h))/(2 * h)
     rhs[n] = - m1 - f(x1)*h/2
 
-    #for i in range(0, n+1):
-    #    rhs[i] -= 0.12
-
-    #matr[0][0] = - k(x0) / h - a0 - q(x0)*h
-
-    # O(h) - seems to be the same as the version above.
-    '''matr[0][0] = - k(x0) / h - a0
-    matr[0][1] = - (x0) / h
-    rhs[0] = -m0
-
-    matr[n][n-1] = - k(x1) / h
-    matr[n][n] = - k(x1) / n - a1
-    rhs[n] = -m1'''
+    # WARNING!
+    for i in range(0, n+1):
+        rhs[i] *= 1.4
 
     x = tridiagonal_matrix_algo(matr, rhs)
-    print "XXX: ", x
     return x
 
 def output(header, x, y):
     print header
     for i in range(0, len(x)):
         print 'y({0}) = {1}'.format(x[i], y[i])
+
+def output_diff(header, x, u, y):
+    print header
+    for i in range(0, len(x)):
+        print 'u({0}) - y({1}) = {2}'.format(x[i], x[i], u[i] - y[i])
 
 def run_methods():
     y_exact = []
@@ -204,10 +185,12 @@ def run_methods():
 
     y_ritz = ritz()
     output("Ritz:", grid, y_ritz)
+    output_diff("Ritz:", grid, y_exact, y_ritz)
     plt.plot(grid, y_ritz, color="green")
 
     y_grids = grid_algorithm()
     output("Grid algorithm:", grid, y_grids)
+    output_diff("Grids:", grid, y_exact, y_grids)
     plt.plot(grid, y_grids, color="blue")
 
     plt.show()

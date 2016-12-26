@@ -17,19 +17,24 @@ $\varphi_{i}$ - нейкія лінейна незалежныя, непарыў
     \begin{cases}
         \sum_{j=1}^n(A\varphi_j, \varphi_i)a_j = (\varphi_i, f) - (A\varphi_0, \varphi_i), \hspace{10pt} i = \overline{1,n} \\
         (\varphi_i, f) = \int_0^1\varphi_i f dx \\
-        (A\varphi_j, \varphi_i) = \int_0^1(k(x)\varphi_i^{\prime}\varphi_j^{\prime} + q(x)\varphi_i\varphi_j) \\
+        (A\varphi_j, \varphi_i) = \int_0^1(k(x)\varphi_i^{\prime}\varphi_j^{\prime} + q(x)\varphi_i\varphi_j) dx \\
     \end{cases}
 \end{equation}
 
 Інтэгралы могуць быць падлічаныя, напрыклад, праз формулу Сімпсана:
 \begin{equation}
-    \int_a^b \approx \frac{h}{6}(f_{i-1} + 4f_{i-\frac{1}{2}} + f_i)
+    \int_a^b f(x)dx \approx \sum_{i=1}^{N} \frac{h}{6}(f_{i-1} + 4f_{i-\frac{1}{2}} + f_i), \hspace{10pt} h = \frac{b-a}{N}
 \end{equation}
 
 Склаўшы сістэму лінейных алгебраічных ураўненняў адносна $a_i, i = \overline{1,n}$, рашаем яе, напрыклад, метадам Гаўса. Атрымаўшы значэнні $a_i$, падстаўляем іх у формулу \eqref{eq:1} і знаходзім функцыі $u_{n}(x)$. Пасля знаходзім значэнні $u_{n}(x)$ на вызначанай сетцы, што і з'ўляецца вынікам працы алгарытма.
 
-Ніжэй прадстаўлены код на мове Python, які рашае вышэй пастаўленую задачу метадам Рытца:
+У нашай рэалізацыі $n=5$, $N=100$ (для падліку інтэграла). Кропкі пасля будуюцца на 10-кропкавай сетцы.
+{\small
 \begin{verbatim}
+n_ritz = 5
+fi0 = lambda x: 0.240 * x + 0.480
+fi0_dx = lambda x: 0.240
+
 def ritz():
     # Defining fi and fi_dx.
     fi = lambda x, i: (x - x0)**(i + 1) * (x - x1)**2
@@ -57,9 +62,13 @@ def ritz():
 
     return x
 \end{verbatim}
+}
 
 Рэалізацыя метада Сімпсана для прыблізнага падліку вызначанага інтэграла:
+{\small
 \begin{verbatim}
+n_integrate = 100
+
 def intergrate_simpson(a, b, f):
     sum = 0
     h = (b - a) / n_integrate
@@ -68,3 +77,22 @@ def intergrate_simpson(a, b, f):
     sum = sum * h / 6.
     return sum
 \end{verbatim}
+}
+
+Атрыманы вынік:
+{\small
+\begin{verbatim}
+Ritz:
+y(0.0) = 0.48
+y(0.1) = 0.509830793921
+y(0.2) = 0.537994026666
+y(0.3) = 0.560468053889
+y(0.4) = 0.58072852305
+y(0.5) = 0.601307384812
+y(0.6) = 0.622386606891
+y(0.7) = 0.643673645461
+y(0.8) = 0.666359730496
+y(0.9) = 0.692516022787
+y(1.0) = 0.719836701642
+\end{verbatim}
+}
