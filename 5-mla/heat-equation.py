@@ -20,9 +20,6 @@ nx = int((x_range[1] - x_range[0]) / hx) + 1
 nt = int((t_range[1] - t_range[0]) / ht) + 1
 
 def tridiagonal_matrix_algo(matr, rhs):
-    print "solving..."
-    print matr
-    print rhs
     return alg.solve(matr, rhs)
 
 def solve_heat_equation():

@@ -24,45 +24,15 @@ exact_solution = lambda x: 1.141 * math.e**(-1.618*x) + 0.339 * math.e**(0.618*x
 # for Ritz algorithm.
 n_ritz = 5
 n_integrate = 100
+# in general case we have to calculate that using the border conditions, as we don't have
+# an exact solution.
 fi0 = lambda x: (exact_solution(1) - exact_solution(0)) * x + exact_solution(0)
 fi0_dx = lambda x: exact_solution(1) - exact_solution(0)
-#fi0 = lambda x: -1./(math.e + 2) - x/(math.e+2) + x*x/(2*math.e + 1)
-#fi0_dx = lambda x: -1./(math.e + 2) + 2.*x/(2*math.e + 1)
-print "c1, c2: ", exact_solution(1) - exact_solution(0), exact_solution(0)
-
-# OVERRIDING for var 3:
-'''k = lambda x: math.cos(x)**2 + 1
-q = lambda x: 1
-f = lambda x: math.sin(x)**2
-a0 = 1.
-m0 = 0.
-a1 = 1.
-m1 = 1.
-x_range = [0., 1.]
-fi0 = lambda x: 2/(math.cos(1)**2 + 4) + x/(math.cos(1)**2 + 4)
-fi0_dx = lambda x: 1./(math.cos(1)**2 + 4)
-n_integrate = 1000'''
-
-# OVERRIDING for var 11:
-'''k = lambda x: math.cos(x)**2
-q = lambda x: math.sin(2*x)
-f = lambda x: x * math.sin(2*x)
-a0 = 0.
-m0 = -1.
-a1 = 1.
-m1 = math.cos(1)**2
-x_range = [0., 1.]
-fi0 = lambda x: x - 1
-fi0_dx = lambda x: 1.
-n_integrate = 1000
-exact_solution = lambda x: x - 1'''
 
 # Algorithm parameters.
 n = 10
 h = (x_range[1] - x_range[0]) / n
-grid = []
-for i in range(0, n+1):
-    grid.append(x_range[0] + i * h)
+grid = [x_range[0] + i * h for i in range(n+1)]
 
 def intergrate_simpson(a, b, f):
     sum = 0
@@ -159,10 +129,6 @@ def grid_algorithm():
     matr[n][n] = - k(x1) / h - a1 - q(x1)*h/2 + (k(x1) - k(x1 - h))/(2 * h)
     rhs[n] = - m1 - f(x1)*h/2
 
-    # WARNING!
-    for i in range(0, n+1):
-        rhs[i] *= 1.4
-
     x = tridiagonal_matrix_algo(matr, rhs)
     return x
 
@@ -196,5 +162,3 @@ def run_methods():
     plt.show()
 
 run_methods()
-#n = 4
-#tridiagonal_matrix_algo([[2.,1.,0,0,0],[1.,3.,2.,0,0],[0,4.,15.,6.,0],[0,0,1.,12.,4.],[0,0,0,3.,13.]], [3., 6., 25., 17., 16.])
