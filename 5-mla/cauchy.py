@@ -2,19 +2,17 @@ import math
 import matplotlib.pyplot as plt
 
 # Defining the Cauchy problem for equation.
-du_dx = lambda x, u: - u * math.cos(x) + math.sin(x) * math.cos(x)
+f = lambda x, u: - u * math.cos(x) + math.sin(x) * math.cos(x)
 x_range = [0., 1.]
-x0 = 0
-u0 = -1
+x0 = 0.
+u0 = -1.
 
-f = du_dx
+du_dx = f
 
 # Defining a grid to make calculations on.
 n = 10
 h = (x_range[1] - x_range[0]) / n
-grid = []
-for i in range(0, n+1):
-    grid.append(x_range[0] + i * h)
+grid = [x_range[0] + i * h for i in range(n+1)]
 
 # Exact solution of the problem.
 exact_solution = lambda x: -1 + math.sin(x)
@@ -24,8 +22,8 @@ k = 3
 d_dx = [
     lambda x, u: u0,
     lambda x, u: du_dx(x, u),
-    lambda x, u: u * math.sin(x) + math.cos(2 * x),
-    lambda x, u: u * math.cos(x) - 2 * math.sin(2 * x),
+    lambda x, u: u * math.sin(x) + math.cos(2 * x) + f(x, u) * (- math.cos(x)),
+    lambda x, u: u * math.cos(x) - 2 * math.sin(2 * x) + 2 * math.sin(x) * f(x, u) - math.cos(x) * d_dx[2](x, u),
 ]
 
 # Constants for algorithms.
@@ -33,24 +31,20 @@ EPS = 1e-5
 MAX_NEWTON_ITERATIONS = 100
 
 def series():
-    print "Simple Taylor series approximation coefficients:"
-    for i in range(0, k+1):
-        print 'x^{0} * {1}'.format(i, d_dx[i](x0, u0) / math.factorial(i))
-
     yi = [u0]
     for i in range(1, len(grid)):
-        x = grid[i]
+        x = grid[i-1]
         step = grid[i] - grid[i-1]
         y = yi[i-1]
         for j in range(1, k+1):
-            y += d_dx[j](x, y) * step**j / math.factorial(j)
+            y += d_dx[j](x, yi[i-1]) / math.factorial(j) * (step**j)
         yi.append(y)
     return yi
 
 def euler_explicit():
     yi = [u0]
     for i in range(1, len(grid)):
-        x = grid[i]
+        x = grid[i-1]
         step = grid[i] - grid[i-1]
         yi.append( yi[-1] + step*f(x,yi[-1]) )
     return yi
@@ -102,7 +96,7 @@ def extra_adams(approx):
     yi = approx
     for i in range(3, len(grid)):
         step = grid[i] - grid[i-1]
-        y_new = yi[i-1] + step * (23 * f(grid[i-1], yi[i-1]) - 15 * f(grid[i-2], yi[i-2]) + 5 * f(grid[i-3], yi[i-3])) / 12.
+        y_new = yi[i-1] + step * (23 * f(grid[i-1], yi[i-1]) - 16 * f(grid[i-2], yi[i-2]) + 5 * f(grid[i-3], yi[i-3])) / 12.
         yi.append(y_new)
     return yi
 
@@ -151,7 +145,7 @@ def run_methods():
     y_extra_adams = extra_adams(y_predictor_corrector[:3])
     output("Extra Adams:", grid, y_extra_adams)
     output_diff("Extra Adams:", grid, y_exact, y_extra_adams)
-    plt.plot(grid, y_extra_adams, color="red")
+    plt.plot(grid, y_extra_adams, color="blue")
 
     plt.show()
 

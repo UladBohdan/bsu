@@ -42,19 +42,17 @@
 {\small
 \begin{verbatim}
 # Defining the Cauchy problem for equation.
-du_dx = lambda x, u: - u * math.cos(x) + math.sin(x) * math.cos(x)
+f = lambda x, u: - u * math.cos(x) + math.sin(x) * math.cos(x)
 x_range = [0., 1.]
-x0 = 0
-u0 = -1
+x0 = 0.
+u0 = -1.
 
-f = du_dx
+du_dx = f
 
 # Defining a grid to make calculations on.
 n = 10
 h = (x_range[1] - x_range[0]) / n
-grid = []
-for i in range(0, n):
-    grid.append(x_range[0] + i * h)
+grid = [x_range[0] + i * h for i in range(n+1)]
 
 # Exact solution of the problem.
 exact_solution = lambda x: -1 + math.sin(x)
@@ -64,9 +62,10 @@ k = 3
 d_dx = [
     lambda x, u: u0,
     lambda x, u: du_dx(x, u),
-    lambda x, u: u * math.sin(x) + math.cos(2 * x),
-    lambda x, u: u * math.cos(x) - 2 * math.sin(2 * x),
-    ]
+    lambda x, u: u * math.sin(x) + math.cos(2 * x) + f(x, u) * (- math.cos(x)),
+    lambda x, u: u * math.cos(x) - 2 * math.sin(2 * x) + 2 * math.sin(x) * f(x, u) -
+            math.cos(x) * d_dx[2](x, u),
+]
 \end{verbatim}
 }
 

@@ -19,17 +19,13 @@
 {\small
 \begin{verbatim}
 def series():
-    print "Simple Taylor series approximation coefficients:"
-    for i in range(0, k+1):
-        print 'x^{0} * {1}'.format(i, d_dx[i](x0, u0) / math.factorial(i))
-
     yi = [u0]
     for i in range(1, len(grid)):
-        x = grid[i]
+        x = grid[i-1]
         step = grid[i] - grid[i-1]
-        y = yi[-1]
+        y = yi[i-1]
         for j in range(1, k+1):
-            y += d_dx[j](x, y) / math.factorial(j) * step**j
+            y += d_dx[j](x, yi[i-1]) / math.factorial(j) * (step**j)
         yi.append(y)
     return yi
 \end{verbatim}
@@ -39,26 +35,19 @@ def series():
 
 {\small
 \begin{verbatim}
-Simple Taylor series approximation coefficients:
-x^0 * -1
-x^1 * 1.0
-x^2 * 0.5
-x^3 * -0.166666666667
 Series method:
-y(0.0) = -1
-y(0.1) = -0.886323495689
-y(0.2) = -0.776413054477
-y(0.3) = -0.671171627517
-y(0.4) = -0.571444707434
-y(0.5) = -0.478019768412
-y(0.6) = -0.391624452047
-y(0.7) = -0.312923629811
-y(0.8) = -0.242515585906
-y(0.9) = -0.18092762033
-y(1.0) = -0.128611385047
+y(0.0) = -1.0
+y(0.1) = -0.900166666667
+y(0.2) = -0.80133124341
+y(0.3) = -0.704481223709
+y(0.4) = -0.610584270389
+y(0.5) = -0.520578547982
+y(0.6) = -0.435363349425
+y(0.7) = -0.355790110828
+y(0.8) = -0.282653904223
+y(0.9) = -0.216685493369
+y(1.0) = -0.158544032078
 \end{verbatim}
 }
 
-То бок маем набліжэнне з дапамогай шэрагу Тэйлара для нашай функцыі:
-$$ u(x) \approx -1 + x + 0.5x^2 - 0.167x^3,$$
-А таксама сетку значэнняў, па якой можна пабудаваць набліжанае рашэнне ураўнення \eqref{eq:my-equation}.
+Маем сетку значэнняў, па якой можна пабудаваць набліжанае рашэнне ураўнення \eqref{eq:my-equation}.
