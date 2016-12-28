@@ -103,7 +103,7 @@ def tridiagonal_matrix_algo(matr, rhs):
         temp = 0.
         for j in range(0, n+1):
             temp += matr[i][j] * x[j]
-        if temp - rhs[i] > EPS:
+        if abs(temp - rhs[i]) > EPS:
             print "incorrect"
             return
     print "correct"
