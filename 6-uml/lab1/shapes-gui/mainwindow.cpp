@@ -106,6 +106,19 @@ Shape* MainWindow::createShape() {
             new_shape = temp_polygonal_chain;
             break;
         }
+        case (POLYGON_6):
+        {
+            Polygon* temp_polygon = new Polygon();
+            temp_polygon->SetPoints(*current_points_);
+            new_shape = temp_polygon;
+            break;
+        }
+    }
+
+    ShapeWithFilling* shapeWithFillingPtr =
+            dynamic_cast<ShapeWithFilling*>(new_shape);
+    if (shapeWithFillingPtr) {
+        shapeWithFillingPtr->SetFillingColor(current_filling_color_);
     }
 
     new_shape->SetKeypoint((*current_points_)[0]);
@@ -128,6 +141,8 @@ void MainWindow::updateParameters() {
         current_shape_ = LINE_SEGMENT;
     } else if (shapeText == "Polygonal 5 Chain") {
         current_shape_ = POLYGONAL_5_CHAIN;
+    } else if (shapeText == "Polygon 6") {
+        current_shape_ = POLYGON_6;
     } else {                            current_shape_ = NOT_CHOSEN;
     }
 }

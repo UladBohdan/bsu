@@ -81,6 +81,11 @@
           <string>Polygonal 5 Chain</string>
          </property>
         </item>
+        <item>
+         <property name="text">
+          <string>Polygon 6</string>
+         </property>
+        </item>
        </widget>
       </item>
       <item>

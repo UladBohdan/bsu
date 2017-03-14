@@ -13,6 +13,7 @@ void Ellipse::Draw() {
     std::cout << "draw ellipse" << std::endl;
     QPainter p(paint_device_);
     p.setPen(line_color_);
+    p.setBrush(QBrush(filling_color_));
     p.drawEllipse(keypoint_,
                   calculateRadius(keypoint_, radius_.second),
                   calculateRadius(keypoint_, radius_.first));

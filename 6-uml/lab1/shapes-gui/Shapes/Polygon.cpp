@@ -1,29 +1,16 @@
-/**
- * Project Untitled
- */
-
-
 #include "Polygon.h"
 
-/**
- * Polygon implementation
- */
-
-
-/**
- * @return QVector<QPoint>
- */
 QVector<QPoint> Polygon::GetPoints() {
-    return null;
+    return points_;
 }
 
-/**
- * @param points
- */
 void Polygon::SetPoints(QVector<QPoint> points) {
-
+    points_ = points;
 }
 
 void Polygon::Draw() {
-
+    QPainter p(paint_device_);
+    p.setPen(line_color_);
+    p.setBrush(QBrush(filling_color_));
+    p.drawPolygon(QPolygon(points_), Qt::WindingFill);
 }

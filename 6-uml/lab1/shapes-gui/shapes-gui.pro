@@ -33,6 +33,7 @@ SOURCES += main.cpp\
         "Shapes\Line.cpp"\
         "Shapes\LineSegment.cpp"\
         "Shapes\PolygonalChain.cpp"\
+        "Shapes\Polygon.cpp"\
 
 HEADERS  += mainwindow.h\
             "Shapes\Ellipse.h"\
@@ -43,5 +44,6 @@ HEADERS  += mainwindow.h\
             "Shapes\Line.h"\
             "Shapes\LineSegment.h"\
             "Shapes\PolygonalChain.h"\
+            "Shapes\Polygon.h"\
 
 FORMS    += mainwindow.ui

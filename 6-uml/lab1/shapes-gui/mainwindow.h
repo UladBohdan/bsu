@@ -11,6 +11,8 @@
 #include "Shapes/Ray.h"
 #include "Shapes/Line.h"
 
+#include "Shapes/Polygon.h"
+
 enum ShapeState{
     NOT_CHOSEN,
     ELLIPSE,
@@ -19,6 +21,7 @@ enum ShapeState{
     LINE,
     LINE_SEGMENT,
     POLYGONAL_5_CHAIN,
+    POLYGON_6,
 };
 
 namespace Ui {
@@ -73,6 +76,7 @@ private:
             case(LINE):                 return 2;
             case(LINE_SEGMENT):         return 2;
             case(POLYGONAL_5_CHAIN):    return 5;
+            case(POLYGON_6):            return 6;
         }
 
         return 0;
