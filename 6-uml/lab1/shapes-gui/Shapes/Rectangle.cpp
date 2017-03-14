@@ -1,10 +1,5 @@
-/**
- * Project Untitled
- */
-
-
 #include "Rectangle.h"
 
-/**
- * Rectangle implementation
- */
+void Rectangle::SetPoints() {
+
+}

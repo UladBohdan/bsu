@@ -4,8 +4,7 @@
 #include "Polygon.h"
 
 class SymmetricPolygon: public Polygon {
-public: 
-    
+public:  
     void SetPoints();
 };
 

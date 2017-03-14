@@ -10,7 +10,6 @@ Ellipse::Ellipse() {
 }
 
 void Ellipse::Draw() {
-    std::cout << "draw ellipse" << std::endl;
     QPainter p(paint_device_);
     p.setPen(line_color_);
     p.setBrush(QBrush(filling_color_));

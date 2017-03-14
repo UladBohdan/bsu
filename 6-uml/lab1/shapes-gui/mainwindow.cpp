@@ -3,7 +3,8 @@
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow) {
+    ui(new Ui::MainWindow),
+    show_symmetric_line_(false) {
     ui->setupUi(this);
 
     list_of_shapes_ = new QVector<Shape*>();
@@ -36,7 +37,22 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event) {
         if (current_points_->size() == numberOfPointsRequired(current_shape_)) {
             addNewShapeFromStack();
         }
+
+        // check if I need to draw a symmetric line.
+        if (current_points_->size() == 1 && (
+                    current_shape_ == SYMMETRIC_6_POLYGON ||
+                    current_shape_ == PARALLELOGRAM ||
+                    current_shape_ == RECTANGLE ||
+                    current_shape_ == RHOMBUS ||
+                    current_shape_ == REGULAR_8_POLYGON ||
+                    current_shape_ == ELLIPSE ||
+                    current_shape_ == CIRCLE ||
+                    current_shape_ == SQUARE)) {
+            show_symmetric_line_ = true;
+        }
     }
+
+    repaint();
 }
 
 void MainWindow::addNewShapeFromStack() {
@@ -76,37 +92,22 @@ Shape* MainWindow::createShape() {
             break;
         }
     case(RAY):
-        {
-            Ray* temp_ray = new Ray();
-            temp_ray->SetPoints(
-                        (*current_points_)[0], (*current_points_)[1] );
-            new_shape = temp_ray;
-            break;
-        }
+        new_shape = new Ray();
+        break;
     case(LINE):
-        {
-            Line* temp_line = new Line();
-            temp_line->SetPoints(
-                        (*current_points_)[0], (*current_points_)[1] );
-            new_shape = temp_line;
-            break;
-        }
-        case(LINE_SEGMENT):
-        {
-            LineSegment* temp_line_segment = new LineSegment();
-            temp_line_segment->SetPoints(
-                        (*current_points_)[0], (*current_points_)[1] );
-            new_shape = temp_line_segment;
-            break;
-        }
-        case(POLYGONAL_5_CHAIN):
+        new_shape = new Line();
+        break;
+    case(LINE_SEGMENT):
+        new_shape = new LineSegment();
+        break;
+    case(POLYGONAL_5_CHAIN):
         {
             PolygonalChain* temp_polygonal_chain = new PolygonalChain();
             temp_polygonal_chain->SetPoints(*current_points_);
             new_shape = temp_polygonal_chain;
             break;
         }
-        case (POLYGON_6):
+    case (POLYGON_6):
         {
             Polygon* temp_polygon = new Polygon();
             temp_polygon->SetPoints(*current_points_);
@@ -121,6 +122,14 @@ Shape* MainWindow::createShape() {
         shapeWithFillingPtr->SetFillingColor(current_filling_color_);
     }
 
+    // for shapes initialized with 2 points.
+    LineSegment* lineSegmentPtr =
+            dynamic_cast<LineSegment*>(new_shape);
+    if (lineSegmentPtr) {
+        lineSegmentPtr->SetPoints(
+                    (*current_points_)[0], (*current_points_)[1] );
+    }
+
     new_shape->SetKeypoint((*current_points_)[0]);
     new_shape->SetLineColor(current_line_color_);
     new_shape->SetPaintDevice(this);
@@ -130,6 +139,7 @@ Shape* MainWindow::createShape() {
 
 void MainWindow::updateParameters() {
     current_points_->clear();
+    show_symmetric_line_ = false;
 
     // current_shape_ init.
     QString shapeText = ui->chooseShapeComboBox->currentText();
@@ -143,6 +153,18 @@ void MainWindow::updateParameters() {
         current_shape_ = POLYGONAL_5_CHAIN;
     } else if (shapeText == "Polygon 6") {
         current_shape_ = POLYGON_6;
+    } else if (shapeText == "Symmetric 6 Polygon") {
+        current_shape_ = SYMMETRIC_6_POLYGON;
+    } else if (shapeText == "Regular 8 Polygon") {
+        current_shape_ = REGULAR_8_POLYGON;
+    } else if (shapeText == "Rhombus") {
+        current_shape_ = RHOMBUS;
+    } else if (shapeText == "Parallelogram") {
+        current_shape_ = PARALLELOGRAM;
+    } else if (shapeText == "Rectangle") {
+        current_shape_ = RECTANGLE;
+    } else if (shapeText == "Square") {
+        current_shape_ = SQUARE;
     } else {                            current_shape_ = NOT_CHOSEN;
     }
 }
@@ -152,9 +174,39 @@ void MainWindow::on_chooseShapeComboBox_currentTextChanged(const QString &arg1) 
 }
 
 void MainWindow::paintEvent(QPaintEvent *paint_event) {
-    std::cout << "lets draw!" << std::endl;
+    if (show_symmetric_line_) {
+        drawSymmetricLine();
+    }
+
     for (Shape* shape : *list_of_shapes_) {
         shape->Draw();
+    }
+
+    drawPointsOnline();
+}
+
+void MainWindow::drawSymmetricLine() {
+    if (current_points_->empty()) {
+        return;
+    }
+
+    const int MAX_SCREEN_SIZE = 9999;
+
+    int x = (*current_points_)[0].x();
+    int y1 = - MAX_SCREEN_SIZE;
+    int y2 = MAX_SCREEN_SIZE;
+
+    QPainter p(this);
+    p.setPen(Qt::lightGray);
+    p.drawLine(x, y1, x, y2);
+}
+
+void MainWindow::drawPointsOnline() {
+    QPainter p(this);
+    p.setPen(Qt::black);
+    p.setBrush(QBrush(Qt::black));
+    for (QPoint point : *current_points_) {
+        p.drawEllipse(point, 3, 3);
     }
 }
 

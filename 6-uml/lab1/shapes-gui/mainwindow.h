@@ -11,7 +11,10 @@
 #include "Shapes/Ray.h"
 #include "Shapes/Line.h"
 
-#include "Shapes/Polygon.h"
+#include "Shapes/Rectangle.h"
+#include "Shapes/Rhombus.h"
+#include "Shapes/Parallelogram.h"
+#include "Shapes/Square.h"
 
 enum ShapeState{
     NOT_CHOSEN,
@@ -22,6 +25,12 @@ enum ShapeState{
     LINE_SEGMENT,
     POLYGONAL_5_CHAIN,
     POLYGON_6,
+    PARALLELOGRAM,
+    RECTANGLE,
+    REGULAR_8_POLYGON,
+    RHOMBUS,
+    SYMMETRIC_6_POLYGON,
+    SQUARE,
 };
 
 namespace Ui {
@@ -59,6 +68,11 @@ private:
 
     QColor current_filling_color_;
 
+    bool show_symmetric_line_;
+    void drawSymmetricLine();
+
+    void drawPointsOnline();
+
     QVector<Shape*> *list_of_shapes_;
 
     void addNewShapeFromStack();
@@ -77,8 +91,13 @@ private:
             case(LINE_SEGMENT):         return 2;
             case(POLYGONAL_5_CHAIN):    return 5;
             case(POLYGON_6):            return 6;
+            case(PARALLELOGRAM):
+            case(RECTANGLE):
+            case(RHOMBUS):              return 3; // 1 for keypoint, 2 for shape.
+            case(REGULAR_8_POLYGON):    return 2; // keypoint + radius.
+            case(SYMMETRIC_6_POLYGON):  return 4;
+            case(SQUARE):               return 2;
         }
-
         return 0;
     }
 };

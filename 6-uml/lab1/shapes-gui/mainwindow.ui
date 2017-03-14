@@ -86,6 +86,36 @@
           <string>Polygon 6</string>
          </property>
         </item>
+        <item>
+         <property name="text">
+          <string>Symmetric 6 Polygon</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Regular 8 Polygon</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Rhombus</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Parallelogram</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Rectangle</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Square</string>
+         </property>
+        </item>
        </widget>
       </item>
       <item>

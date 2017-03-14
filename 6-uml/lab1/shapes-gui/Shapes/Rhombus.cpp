@@ -1,10 +1,5 @@
-/**
- * Project Untitled
- */
-
-
 #include "Rhombus.h"
 
-/**
- * Rhombus implementation
- */
+void Rhombus::SetPoints(QVector<QPoint> points) {
+
+}
