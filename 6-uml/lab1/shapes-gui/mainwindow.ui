@@ -61,6 +61,26 @@
           <string>Circle</string>
          </property>
         </item>
+        <item>
+         <property name="text">
+          <string>Ray</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Line</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Line Segment</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Polygonal 5 Chain</string>
+         </property>
+        </item>
        </widget>
       </item>
       <item>

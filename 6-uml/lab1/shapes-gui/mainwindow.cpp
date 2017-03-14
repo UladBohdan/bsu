@@ -75,6 +75,37 @@ Shape* MainWindow::createShape() {
             new_shape = temp_circle;
             break;
         }
+    case(RAY):
+        {
+            Ray* temp_ray = new Ray();
+            temp_ray->SetPoints(
+                        (*current_points_)[0], (*current_points_)[1] );
+            new_shape = temp_ray;
+            break;
+        }
+    case(LINE):
+        {
+            Line* temp_line = new Line();
+            temp_line->SetPoints(
+                        (*current_points_)[0], (*current_points_)[1] );
+            new_shape = temp_line;
+            break;
+        }
+        case(LINE_SEGMENT):
+        {
+            LineSegment* temp_line_segment = new LineSegment();
+            temp_line_segment->SetPoints(
+                        (*current_points_)[0], (*current_points_)[1] );
+            new_shape = temp_line_segment;
+            break;
+        }
+        case(POLYGONAL_5_CHAIN):
+        {
+            PolygonalChain* temp_polygonal_chain = new PolygonalChain();
+            temp_polygonal_chain->SetPoints(*current_points_);
+            new_shape = temp_polygonal_chain;
+            break;
+        }
     }
 
     new_shape->SetKeypoint((*current_points_)[0]);
@@ -91,6 +122,12 @@ void MainWindow::updateParameters() {
     QString shapeText = ui->chooseShapeComboBox->currentText();
     if (shapeText == "Ellipse") {       current_shape_ = ELLIPSE;
     } else if (shapeText == "Circle") { current_shape_ = CIRCLE;
+    } else if (shapeText == "Ray") {    current_shape_ = RAY;
+    } else if (shapeText == "Line") {   current_shape_ = LINE;
+    } else if (shapeText == "Line Segment") {
+        current_shape_ = LINE_SEGMENT;
+    } else if (shapeText == "Polygonal 5 Chain") {
+        current_shape_ = POLYGONAL_5_CHAIN;
     } else {                            current_shape_ = NOT_CHOSEN;
     }
 }

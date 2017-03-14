@@ -15,6 +15,10 @@ enum ShapeState{
     NOT_CHOSEN,
     ELLIPSE,
     CIRCLE,
+    RAY,
+    LINE,
+    LINE_SEGMENT,
+    POLYGONAL_5_CHAIN,
 };
 
 namespace Ui {
@@ -62,12 +66,13 @@ private:
 
     int static numberOfPointsRequired(ShapeState shape_state) {
         switch(shape_state) {
-        case(NOT_CHOSEN):
-            return 0;
-        case(ELLIPSE):
-            return 3;
-        case(CIRCLE):
-            return 2;
+            case(NOT_CHOSEN):           return 0;
+            case(ELLIPSE):              return 3;
+            case(CIRCLE):               return 2;
+            case(RAY):                  return 2;
+            case(LINE):                 return 2;
+            case(LINE_SEGMENT):         return 2;
+            case(POLYGONAL_5_CHAIN):    return 5;
         }
 
         return 0;
