@@ -9,6 +9,9 @@ MainWindow::MainWindow(QWidget *parent) :
     list_of_shapes_ = new QVector<Shape*>();
     current_points_ = new QVector<QPoint>();
 
+    current_line_color_ = Qt::black;
+    current_filling_color_ = Qt::white;
+
     updateParameters();
 }
 
@@ -22,8 +25,7 @@ MainWindow::~MainWindow() {
 }
 
 void MainWindow::mouseReleaseEvent(QMouseEvent *event) {
-    // TODO(uladbohdan): to remove.
-    ui->statusBar->showMessage("works! " + QString::number(event->pos().x()) +
+    ui->statusBar->showMessage("coordinates: " + QString::number(event->pos().x()) +
                                " " + QString::number(event->pos().y()));
 
     if (current_shape_ == NOT_CHOSEN) {
@@ -60,7 +62,8 @@ Shape* MainWindow::createShape() {
         {
             Ellipse* temp_ellipse = new Ellipse();
             temp_ellipse->SetRadius(
-                        QPair<QPoint, QPoint>((*current_points_)[1],(*current_points_)[2])
+                        QPair<QPoint, QPoint>((*current_points_)[1],
+                                                (*current_points_)[2])
                     );
             new_shape = temp_ellipse;
             break;
@@ -75,6 +78,7 @@ Shape* MainWindow::createShape() {
     }
 
     new_shape->SetKeypoint((*current_points_)[0]);
+    new_shape->SetLineColor(current_line_color_);
     new_shape->SetPaintDevice(this);
     std::cout << "Shape created." << std::endl;
     return new_shape;
@@ -100,4 +104,14 @@ void MainWindow::paintEvent(QPaintEvent *paint_event) {
     for (Shape* shape : *list_of_shapes_) {
         shape->Draw();
     }
+}
+
+void MainWindow::on_lineColorPicker_clicked() {
+    current_line_color_ =
+            QColorDialog::getColor(Qt::black, this, "Choose line color");
+}
+
+void MainWindow::on_fillingColorPicker_clicked() {
+    current_filling_color_ =
+            QColorDialog::getColor(Qt::white, this, "Choose filling color");
 }

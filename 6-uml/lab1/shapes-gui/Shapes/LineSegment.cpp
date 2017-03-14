@@ -1,23 +1,10 @@
-/**
- * Project Untitled
- */
-
-
 #include "LineSegment.h"
 
-/**
- * LineSegment implementation
- */
-
-
-/**
- * @param a 
- * @param b
- */
-void LineSegment::SetPoints(QPoint a , QPoint b ) {
-
+LineSegment::LineSegment() {
 }
 
-void LineSegment::GetPoints() {
-
+void LineSegment::SetPoints(QPoint a , QPoint b) {
+    points_ = QVector<QPoint>();
+    SetKeypoint(a);
+    points_.push_back(b);
 }

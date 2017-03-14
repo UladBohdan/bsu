@@ -1,26 +1,16 @@
-/**
- * Project Untitled
- */
-
-
 #ifndef _POLYGONALCHAIN_H
 #define _POLYGONALCHAIN_H
 
 #include "Shape.h"
 
-
 class PolygonalChain: public Shape {
-public: 
-    
+public:
     QVector<QPoint> GetPoints();
     
-    /**
-     * @param points
-     */
     void SetPoints(QVector<QPoint> points);
     
-    void Draw();
-private: 
+    void Draw() override;
+protected:
     QVector<QPoint> points_;
 };
 

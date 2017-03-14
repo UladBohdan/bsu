@@ -3,9 +3,13 @@
 
 #include <QMainWindow>
 #include <QMouseEvent>
+#include <QColorDialog>
 
 #include "Shapes/Ellipse.h"
 #include "Shapes/Circle.h"
+
+#include "Shapes/Ray.h"
+#include "Shapes/Line.h"
 
 enum ShapeState{
     NOT_CHOSEN,
@@ -28,6 +32,10 @@ public:
 private slots:
     void on_chooseShapeComboBox_currentTextChanged(const QString &arg1);
 
+    void on_lineColorPicker_clicked();
+
+    void on_fillingColorPicker_clicked();
+
 protected:
     void mouseReleaseEvent(QMouseEvent *event) override;
 
@@ -39,6 +47,10 @@ private:
     ShapeState current_shape_;
 
     QVector<QPoint> *current_points_;
+
+    QColor current_line_color_;
+
+    QColor current_filling_color_;
 
     QVector<Shape*> *list_of_shapes_;
 

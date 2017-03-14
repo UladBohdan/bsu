@@ -29,11 +29,19 @@ SOURCES += main.cpp\
         "Shapes\Circle.cpp"\
         "Shapes\ShapeWithFilling.cpp"\
         "Shapes\Shape.cpp"\
+        "Shapes\Ray.cpp"\
+        "Shapes\Line.cpp"\
+        "Shapes\LineSegment.cpp"\
+        "Shapes\PolygonalChain.cpp"\
 
 HEADERS  += mainwindow.h\
             "Shapes\Ellipse.h"\
             "Shapes\Circle.h"\
             "Shapes\ShapeWithFilling.h"\
             "Shapes\Shape.h"\
+            "Shapes\Ray.h"\
+            "Shapes\Line.h"\
+            "Shapes\LineSegment.h"\
+            "Shapes\PolygonalChain.h"\
 
 FORMS    += mainwindow.ui

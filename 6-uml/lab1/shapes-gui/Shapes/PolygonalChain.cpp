@@ -1,27 +1,11 @@
-/**
- * Project Untitled
- */
-
-
 #include "PolygonalChain.h"
 
-/**
- * PolygonalChain implementation
- */
-
-
-/**
- * @return QVector<QPoint>
- */
 QVector<QPoint> PolygonalChain::GetPoints() {
-    return null;
+    return points_;
 }
 
-/**
- * @param points
- */
 void PolygonalChain::SetPoints(QVector<QPoint> points) {
-
+    points_ = QVector<QPoint>(points);
 }
 
 void PolygonalChain::Draw() {

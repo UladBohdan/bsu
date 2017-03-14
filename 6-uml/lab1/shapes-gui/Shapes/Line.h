@@ -12,7 +12,7 @@
 class Line: public LineSegment {
 public: 
     
-    void Draw();
+    void Draw() override;
 };
 
 #endif //_LINE_H
