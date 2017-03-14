@@ -24,8 +24,16 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp
+        mainwindow.cpp\
+        "Shapes\Ellipse.cpp"\
+        "Shapes\Circle.cpp"\
+        "Shapes\ShapeWithFilling.cpp"\
+        "Shapes\Shape.cpp"\
 
-HEADERS  += mainwindow.h
+HEADERS  += mainwindow.h\
+            "Shapes\Ellipse.h"\
+            "Shapes\Circle.h"\
+            "Shapes\ShapeWithFilling.h"\
+            "Shapes\Shape.h"\
 
 FORMS    += mainwindow.ui
