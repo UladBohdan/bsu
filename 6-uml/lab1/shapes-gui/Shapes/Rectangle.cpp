@@ -1,5 +1,5 @@
 #include "Rectangle.h"
 
-void Rectangle::SetPoints() {
+void Rectangle::SetPoints(QVector<QPoint> points) {
 
 }

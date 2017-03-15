@@ -34,6 +34,12 @@ SOURCES += main.cpp\
         "Shapes\LineSegment.cpp"\
         "Shapes\PolygonalChain.cpp"\
         "Shapes\Polygon.cpp"\
+        "Shapes\SymmetricPolygon.cpp"\
+        "Shapes\Square.cpp"\
+        "Shapes\Rhombus.cpp"\
+        "Shapes\RegularPolygon.cpp"\
+        "Shapes\Rectangle.cpp"\
+        "Shapes\Parallelogram.cpp"\
 
 HEADERS  += mainwindow.h\
             "Shapes\Ellipse.h"\
@@ -45,5 +51,11 @@ HEADERS  += mainwindow.h\
             "Shapes\LineSegment.h"\
             "Shapes\PolygonalChain.h"\
             "Shapes\Polygon.h"\
+            "Shapes\SymmetricPolygon.h"\
+            "Shapes\Square.h"\
+            "Shapes\Rhombus.h"\
+            "Shapes\RegularPolygon.h"\
+            "Shapes\Rectangle.h"\
+            "Shapes\Parallelogram.h"\
 
 FORMS    += mainwindow.ui

@@ -39,20 +39,28 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event) {
         }
 
         // check if I need to draw a symmetric line.
-        if (current_points_->size() == 1 && (
-                    current_shape_ == SYMMETRIC_6_POLYGON ||
-                    current_shape_ == PARALLELOGRAM ||
-                    current_shape_ == RECTANGLE ||
-                    current_shape_ == RHOMBUS ||
-                    current_shape_ == REGULAR_8_POLYGON ||
-                    current_shape_ == ELLIPSE ||
-                    current_shape_ == CIRCLE ||
-                    current_shape_ == SQUARE)) {
+        if (current_points_->size() == 1 &&
+                belongsToSymmetric(current_shape_)) {
             show_symmetric_line_ = true;
         }
     }
 
     repaint();
+}
+
+bool MainWindow::belongsToSymmetric(ShapeState shape) {
+    return (shape == SYMMETRIC_6_POLYGON ||
+            shape == PARALLELOGRAM ||
+            shape == RECTANGLE ||
+            shape == RHOMBUS ||
+            shape == REGULAR_8_POLYGON ||
+            shape == ELLIPSE ||
+            shape == CIRCLE ||
+            shape == SQUARE);
+}
+
+bool MainWindow::drawAsSymmetric(ShapeState shape) {
+    return (shape == SYMMETRIC_6_POLYGON);
 }
 
 void MainWindow::addNewShapeFromStack() {
@@ -62,8 +70,7 @@ void MainWindow::addNewShapeFromStack() {
     }
 
     list_of_shapes_->push_back(new_shape);
-    std::cout << "current number of shapes: "
-              << list_of_shapes_->size() << std::endl;
+
     updateParameters();
     repaint();
 }
@@ -75,22 +82,14 @@ Shape* MainWindow::createShape() {
     case(NOT_CHOSEN):
         return NULL;
     case(ELLIPSE):
-        {
-            Ellipse* temp_ellipse = new Ellipse();
-            temp_ellipse->SetRadius(
-                        QPair<QPoint, QPoint>((*current_points_)[1],
-                                                (*current_points_)[2])
-                    );
-            new_shape = temp_ellipse;
-            break;
-        }
+        new_shape = new Ellipse();
+        dynamic_cast<Ellipse*>(new_shape)->SetRadius(
+                    QPair<QPoint, QPoint>((*current_points_)[1], (*current_points_)[2]) );
+        break;
     case(CIRCLE):
-        {
-            Circle* temp_circle = new Circle();
-            temp_circle->SetRadius((*current_points_)[1]);
-            new_shape = temp_circle;
-            break;
-        }
+        new_shape = new Circle();
+        dynamic_cast<Circle*>(new_shape)->SetRadius((*current_points_)[1]);
+        break;
     case(RAY):
         new_shape = new Ray();
         break;
@@ -101,19 +100,17 @@ Shape* MainWindow::createShape() {
         new_shape = new LineSegment();
         break;
     case(POLYGONAL_5_CHAIN):
-        {
-            PolygonalChain* temp_polygonal_chain = new PolygonalChain();
-            temp_polygonal_chain->SetPoints(*current_points_);
-            new_shape = temp_polygonal_chain;
-            break;
-        }
+        new_shape = new PolygonalChain();
+        dynamic_cast<PolygonalChain*>(new_shape)->SetPoints(*current_points_);
+        break;
     case (POLYGON_6):
-        {
-            Polygon* temp_polygon = new Polygon();
-            temp_polygon->SetPoints(*current_points_);
-            new_shape = temp_polygon;
-            break;
-        }
+        new_shape = new Polygon();
+        dynamic_cast<Polygon*>(new_shape)->SetPoints(*current_points_);
+        break;
+    case(SYMMETRIC_6_POLYGON):
+        new_shape = new SymmetricPolygon();
+        dynamic_cast<SymmetricPolygon*>(new_shape)->SetPoints(*current_points_);
+        break;
     }
 
     ShapeWithFilling* shapeWithFillingPtr =
@@ -133,7 +130,7 @@ Shape* MainWindow::createShape() {
     new_shape->SetKeypoint((*current_points_)[0]);
     new_shape->SetLineColor(current_line_color_);
     new_shape->SetPaintDevice(this);
-    std::cout << "Shape created." << std::endl;
+
     return new_shape;
 }
 

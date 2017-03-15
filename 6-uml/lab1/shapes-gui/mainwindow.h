@@ -73,6 +73,10 @@ private:
 
     void drawPointsOnline();
 
+    bool belongsToSymmetric(ShapeState shape);
+
+    bool drawAsSymmetric(ShapeState shape);
+
     QVector<Shape*> *list_of_shapes_;
 
     void addNewShapeFromStack();

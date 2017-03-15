@@ -5,7 +5,7 @@
 
 class SymmetricPolygon: public Polygon {
 public:  
-    void SetPoints();
+    void SetPoints(QVector<QPoint>);
 };
 
 #endif //_SYMMETRICPOLYGON_H

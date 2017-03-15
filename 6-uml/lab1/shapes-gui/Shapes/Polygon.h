@@ -11,7 +11,7 @@ public:
     void SetPoints(QVector<QPoint> points);
     
     void Draw() override;
-private: 
+protected:
     QVector<QPoint> points_;
 };
 
