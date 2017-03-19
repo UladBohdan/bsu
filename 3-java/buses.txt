@@ -1,0 +1,4 @@
+3
+FFGc yellow diesel 50 2
+FBHDd blue oil 48 3
+fgfHBD black oil 30 4

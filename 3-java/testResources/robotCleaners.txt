@@ -1,0 +1,6 @@
+5
+Bosch Red 45 testResources/AQ.png TRUE
+LG Green 30 testResources/AQ.png TRUE
+Samsung Blue 20 testResources/BN.png FALSE
+Samsung Yellow 50 testResources/AS.png FALSE
+Philips Green 49 testResources/AU.png TRUE

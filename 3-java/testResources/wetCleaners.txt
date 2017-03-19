@@ -1,0 +1,6 @@
+5
+Philips Red 55 testResources/AQ.png 50
+LG Green 60 testResources/AQ.png 90
+LG Black 30 testResources/BN.png 27
+Samsung Green 37 testResources/AS.png 85
+Atlant Green 80 testResources/AU.png 11

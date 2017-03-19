@@ -1,0 +1,6 @@
+5
+Name1 3 6.7
+Name2 3 9.6
+Name3 9 2.34
+Name4 1 4.0
+Name5 2 7.
