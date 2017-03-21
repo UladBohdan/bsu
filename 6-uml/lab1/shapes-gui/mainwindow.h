@@ -23,13 +23,13 @@ enum ShapeState{
     RAY,
     LINE,
     LINE_SEGMENT,
-    POLYGONAL_5_CHAIN,
-    POLYGON_6,
+    POLYGONAL_CHAIN,
+    POLYGON,
     PARALLELOGRAM,
     RECTANGLE,
-    REGULAR_8_POLYGON,
+    REGULAR_POLYGON,
     RHOMBUS,
-    SYMMETRIC_6_POLYGON,
+    SYMMETRIC_POLYGON,
     SQUARE,
 };
 
@@ -75,8 +75,6 @@ private:
 
     bool belongsToSymmetric(ShapeState shape);
 
-    bool drawAsSymmetric(ShapeState shape);
-
     QVector<Shape*> *list_of_shapes_;
 
     void addNewShapeFromStack();
@@ -85,25 +83,7 @@ private:
 
     void updateParameters();
 
-    int static numberOfPointsRequired(ShapeState shape_state) {
-        switch(shape_state) {
-            case(NOT_CHOSEN):           return 0;
-            case(ELLIPSE):              return 3;
-            case(CIRCLE):               return 2;
-            case(RAY):                  return 2;
-            case(LINE):                 return 2;
-            case(LINE_SEGMENT):         return 2;
-            case(POLYGONAL_5_CHAIN):    return 5;
-            case(POLYGON_6):            return 6;
-            case(PARALLELOGRAM):
-            case(RECTANGLE):
-            case(RHOMBUS):              return 3; // 1 for keypoint, 2 for shape.
-            case(REGULAR_8_POLYGON):    return 2; // keypoint + radius.
-            case(SYMMETRIC_6_POLYGON):  return 4;
-            case(SQUARE):               return 2;
-        }
-        return 0;
-    }
+    int numberOfPointsRequired(ShapeState shape_state);
 };
 
 #endif // MAINWINDOW_H

@@ -38,7 +38,7 @@
        <x>0</x>
        <y>40</y>
        <width>211</width>
-       <height>103</height>
+       <height>104</height>
       </rect>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout">
@@ -78,22 +78,22 @@
         </item>
         <item>
          <property name="text">
-          <string>Polygonal 5 Chain</string>
+          <string>Polygonal Chain</string>
          </property>
         </item>
         <item>
          <property name="text">
-          <string>Polygon 6</string>
+          <string>Polygon</string>
          </property>
         </item>
         <item>
          <property name="text">
-          <string>Symmetric 6 Polygon</string>
+          <string>Symmetric Polygon</string>
          </property>
         </item>
         <item>
          <property name="text">
-          <string>Regular 8 Polygon</string>
+          <string>Rectangle</string>
          </property>
         </item>
         <item>
@@ -103,12 +103,17 @@
         </item>
         <item>
          <property name="text">
-          <string>Parallelogram</string>
+          <string>---------------------</string>
          </property>
         </item>
         <item>
          <property name="text">
-          <string>Rectangle</string>
+          <string>Regular Polygon</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Parallelogram</string>
          </property>
         </item>
         <item>
@@ -121,12 +126,19 @@
       <item>
        <widget class="QLabel" name="label_2">
         <property name="text">
-         <string>Existing drawings:</string>
+         <string>Additional parameter:</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QComboBox" name="historyComboBox"/>
+       <widget class="QSpinBox" name="paramSpinBox">
+        <property name="minimum">
+         <number>3</number>
+        </property>
+        <property name="value">
+         <number>5</number>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>
@@ -135,7 +147,7 @@
       <rect>
        <x>0</x>
        <y>0</y>
-       <width>211</width>
+       <width>216</width>
        <height>41</height>
       </rect>
      </property>

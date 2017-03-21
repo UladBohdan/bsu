@@ -25,6 +25,26 @@ MainWindow::~MainWindow() {
     delete current_points_;
 }
 
+int MainWindow::numberOfPointsRequired(ShapeState shape_state) {
+    switch(shape_state) {
+        case(NOT_CHOSEN):           return 0;
+        case(ELLIPSE):              return 3;
+        case(CIRCLE):               return 2;
+        case(RAY):                  return 2;
+        case(LINE):                 return 2;
+        case(LINE_SEGMENT):         return 2;
+        case(POLYGONAL_CHAIN):      return ui->paramSpinBox->value();
+        case(POLYGON):              return ui->paramSpinBox->value();
+        case(SYMMETRIC_POLYGON):    return 1 + ui->paramSpinBox->value();
+        case(PARALLELOGRAM):
+        case(RECTANGLE):            return 3;
+        case(RHOMBUS):              return 2; // 1 for keypoint, 1 for shape.
+        case(REGULAR_POLYGON):      return 2; // keypoint + radius.
+        case(SQUARE):               return 2;
+    }
+    return 0;
+}
+
 void MainWindow::mouseReleaseEvent(QMouseEvent *event) {
     ui->statusBar->showMessage("coordinates: " + QString::number(event->pos().x()) +
                                " " + QString::number(event->pos().y()));
@@ -49,18 +69,14 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event) {
 }
 
 bool MainWindow::belongsToSymmetric(ShapeState shape) {
-    return (shape == SYMMETRIC_6_POLYGON ||
+    return (shape == SYMMETRIC_POLYGON ||
             shape == PARALLELOGRAM ||
             shape == RECTANGLE ||
             shape == RHOMBUS ||
-            shape == REGULAR_8_POLYGON ||
+            shape == REGULAR_POLYGON ||
             shape == ELLIPSE ||
             shape == CIRCLE ||
             shape == SQUARE);
-}
-
-bool MainWindow::drawAsSymmetric(ShapeState shape) {
-    return (shape == SYMMETRIC_6_POLYGON);
 }
 
 void MainWindow::addNewShapeFromStack() {
@@ -99,17 +115,29 @@ Shape* MainWindow::createShape() {
     case(LINE_SEGMENT):
         new_shape = new LineSegment();
         break;
-    case(POLYGONAL_5_CHAIN):
+    case(POLYGONAL_CHAIN):
         new_shape = new PolygonalChain();
         dynamic_cast<PolygonalChain*>(new_shape)->SetPoints(*current_points_);
         break;
-    case (POLYGON_6):
+    case (POLYGON):
         new_shape = new Polygon();
         dynamic_cast<Polygon*>(new_shape)->SetPoints(*current_points_);
         break;
-    case(SYMMETRIC_6_POLYGON):
+    case(SYMMETRIC_POLYGON):
         new_shape = new SymmetricPolygon();
         dynamic_cast<SymmetricPolygon*>(new_shape)->SetPoints(*current_points_);
+        break;
+   case(RECTANGLE):
+        new_shape = new Rectangle();
+        dynamic_cast<Rectangle*>(new_shape)->SetPoints(*current_points_);
+        break;
+    case(RHOMBUS):
+        new_shape = new Rhombus();
+        dynamic_cast<Rhombus*>(new_shape)->SetPoints(*current_points_);
+        break;
+    case(PARALLELOGRAM):
+    case(REGULAR_POLYGON):
+    case(SQUARE):
         break;
     }
 
@@ -146,14 +174,14 @@ void MainWindow::updateParameters() {
     } else if (shapeText == "Line") {   current_shape_ = LINE;
     } else if (shapeText == "Line Segment") {
         current_shape_ = LINE_SEGMENT;
-    } else if (shapeText == "Polygonal 5 Chain") {
-        current_shape_ = POLYGONAL_5_CHAIN;
-    } else if (shapeText == "Polygon 6") {
-        current_shape_ = POLYGON_6;
-    } else if (shapeText == "Symmetric 6 Polygon") {
-        current_shape_ = SYMMETRIC_6_POLYGON;
-    } else if (shapeText == "Regular 8 Polygon") {
-        current_shape_ = REGULAR_8_POLYGON;
+    } else if (shapeText == "Polygonal Chain") {
+        current_shape_ = POLYGONAL_CHAIN;
+    } else if (shapeText == "Polygon") {
+        current_shape_ = POLYGON;
+    } else if (shapeText == "Symmetric Polygon") {
+        current_shape_ = SYMMETRIC_POLYGON;
+    } else if (shapeText == "Regular Polygon") {
+        current_shape_ = REGULAR_POLYGON;
     } else if (shapeText == "Rhombus") {
         current_shape_ = RHOMBUS;
     } else if (shapeText == "Parallelogram") {
@@ -171,12 +199,12 @@ void MainWindow::on_chooseShapeComboBox_currentTextChanged(const QString &arg1) 
 }
 
 void MainWindow::paintEvent(QPaintEvent *paint_event) {
-    if (show_symmetric_line_) {
-        drawSymmetricLine();
-    }
-
     for (Shape* shape : *list_of_shapes_) {
         shape->Draw();
+    }
+
+    if (show_symmetric_line_) {
+        drawSymmetricLine();
     }
 
     drawPointsOnline();
