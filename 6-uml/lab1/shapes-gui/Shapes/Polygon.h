@@ -8,7 +8,7 @@ public:
     
     QVector<QPoint> GetPoints();
     
-    void SetPoints(QVector<QPoint> points);
+    virtual void SetPoints(QVector<QPoint> points);
     
     void Draw() override;
 protected:

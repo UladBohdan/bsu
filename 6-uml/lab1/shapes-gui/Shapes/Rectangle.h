@@ -5,7 +5,7 @@
 
 class Rectangle: public SymmetricPolygon {
 public:
-    void SetPoints(QVector<QPoint> points);
+    virtual void SetPoints(QVector<QPoint> points) override;
 };
 
 #endif //_RECTANGLE_H

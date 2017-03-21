@@ -121,24 +121,26 @@ Shape* MainWindow::createShape() {
         break;
     case (POLYGON):
         new_shape = new Polygon();
-        dynamic_cast<Polygon*>(new_shape)->SetPoints(*current_points_);
         break;
     case(SYMMETRIC_POLYGON):
         new_shape = new SymmetricPolygon();
-        dynamic_cast<SymmetricPolygon*>(new_shape)->SetPoints(*current_points_);
         break;
    case(RECTANGLE):
         new_shape = new Rectangle();
-        dynamic_cast<Rectangle*>(new_shape)->SetPoints(*current_points_);
         break;
     case(RHOMBUS):
         new_shape = new Rhombus();
-        dynamic_cast<Rhombus*>(new_shape)->SetPoints(*current_points_);
         break;
     case(PARALLELOGRAM):
     case(REGULAR_POLYGON):
     case(SQUARE):
         break;
+    }
+
+    // Calling SetPoints for Polygon and derived.
+    Polygon* polygonPtr = dynamic_cast<Polygon*>(new_shape);
+    if (polygonPtr) {
+        polygonPtr->SetPoints(*current_points_);
     }
 
     ShapeWithFilling* shapeWithFillingPtr =
