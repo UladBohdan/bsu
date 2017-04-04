@@ -1,7 +1,11 @@
 #ifndef MAINWINDOW_H_
 #define MAINWINDOW_H_
 
+#include <cmath>
+#include <iostream>
+
 #include <QMainWindow>
+#include <QMap>
 #include <QMouseEvent>
 #include <QPainter>
 #include <QPaintEvent>
@@ -26,6 +30,8 @@ protected:
 
 private slots:
     void on_pushButton_clicked();
+
+    void on_pushButton_2_clicked();
 
 private:
     Ui::MainWindow *ui;
