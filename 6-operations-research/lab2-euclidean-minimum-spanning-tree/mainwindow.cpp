@@ -18,8 +18,64 @@ CalculateEuclideanMinimumSpanningTree_Fast(QVector<QPoint>& points) {
     return QVector<QPair<QPoint, QPoint>>();
 }
 
-QVector<QPair<QPoint, QPoint>>
-CalculateEuclideanMinimumSpanningTree_Slow(QVector<QPoint>& points) {
+// Edge is distance + indices of two points.
+typedef std::pair<double,std::pair<int,int>> Edge;
+
+QVector<QPair<QPoint, QPoint>> Prima_Dijkstra_MlogN(QVector<QPoint>& points) {
+    const int sz = points.size();
+
+    auto cmp = [](Edge left, Edge right) { return left.first > right.first;};
+    std::priority_queue<Edge, std::vector<Edge>, decltype(cmp)> q(cmp);
+
+    QVector<QPair<QPoint, QPoint>> edges;
+    edges.reserve(sz - 1);
+
+    QVector<bool> used(sz, false);
+
+    // 0 is the first point to be added.
+    for (int i = 1; i < sz; i++) {
+        std::pair<int, int> edge(0, i);
+        q.push(Edge(dist(points[0], points[i]), edge));
+    }
+    used[0] = true;
+
+    while (edges.size() != sz - 1) {
+        Edge min_edge;
+        int new_node;
+        while (true) {
+            min_edge = q.top();
+            bool a = used[min_edge.second.first];
+            bool b = used[min_edge.second.second];
+            if (a ^ b) {
+                if (!a) {
+                    new_node = min_edge.second.first;
+                } else {
+                    new_node = min_edge.second.second;
+                }
+                break;
+            } else {
+                q.pop();
+            }
+        }
+        q.pop();
+
+        edges.push_back(QPair<QPoint, QPoint>(points[min_edge.second.first],
+                        points[min_edge.second.second]));
+
+        used[new_node] = true;
+
+        for (int i = 0; i < sz; i++) {
+            if (!used[i]) {
+                std::pair<int, int> edge(new_node, i);
+                q.push(Edge(dist(points[new_node], points[i]), edge));
+            }
+        }
+    }
+
+    return edges;
+}
+
+QVector<QPair<QPoint, QPoint>> Prima_Dijkstra_N3(QVector<QPoint>& points) {
     const int sz = points.size();
 
     QVector<QVector<double>> matr(sz, QVector<double>(sz));
@@ -30,6 +86,7 @@ CalculateEuclideanMinimumSpanningTree_Slow(QVector<QPoint>& points) {
     }
 
     QVector<QPair<QPoint, QPoint>> edges;
+    edges.reserve(sz - 1);
 
     QVector<bool> used(sz, false);
 
@@ -94,6 +151,11 @@ void MainWindow::on_pushButton_clicked() {
 }
 
 void MainWindow::on_pushButton_2_clicked() {
-    edges_ = CalculateEuclideanMinimumSpanningTree_Slow(points_);
+    edges_ = Prima_Dijkstra_N3(points_);
+    repaint();
+}
+
+void MainWindow::on_pushButton_3_clicked() {
+    edges_ = Prima_Dijkstra_MlogN(points_);
     repaint();
 }

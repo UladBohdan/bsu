@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>Euclidean minimum spanning tree</string>
   </property>
   <widget class="QWidget" name="centralWidget">
    <widget class="QPushButton" name="pushButton">
@@ -22,7 +22,7 @@
      <rect>
       <x>10</x>
       <y>10</y>
-      <width>191</width>
+      <width>261</width>
       <height>32</height>
      </rect>
     </property>
@@ -34,13 +34,26 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>40</y>
-      <width>191</width>
+      <y>70</y>
+      <width>261</width>
       <height>32</height>
      </rect>
     </property>
     <property name="text">
-     <string>Prima-Dijkstra on full graph</string>
+     <string>Prima-Dijkstra on full graph O(N^3)</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_3">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>40</y>
+      <width>261</width>
+      <height>32</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Prima-Dijkstra on full graph O(M*logN)</string>
     </property>
    </widget>
   </widget>
