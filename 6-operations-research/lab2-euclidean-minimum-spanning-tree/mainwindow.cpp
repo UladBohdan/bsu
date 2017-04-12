@@ -13,15 +13,78 @@ double inline dist(QPoint& a, QPoint& b) {
 // The methods calculate Euclidean Minimum Spanning Tree and returns vector
 // of edges: every edge is two points (their coordinates).
 
+/*
 QVector<QPair<QPoint, QPoint>>
 CalculateEuclideanMinimumSpanningTree_Fast(QVector<QPoint>& points) {
-    return QVector<QPair<QPoint, QPoint>>();
+    return CalculateDelaunayTriangularion(points);
+}*/
+
+QVector<QPair<int, int>>
+CalculateDelaunayTriangularion(QVector<QPoint>& points) {
+  const QString FILE_PREFIX = "temp0";
+  const QString NODES_FILENAME = FILE_PREFIX + ".node";
+  const QString NODES_FILENAME_ALT = FILE_PREFIX + ".1.node";
+  const QString ELE_FILENAME = FILE_PREFIX + ".1.ele";
+
+  if (QFileInfo(NODES_FILENAME).exists()) {
+    QFile(NODES_FILENAME).remove();
+  }
+  if (QFileInfo(NODES_FILENAME_ALT).exists()) {
+    QFile(NODES_FILENAME_ALT).remove();
+  }
+  if (QFileInfo(ELE_FILENAME).exists()) {
+    QFile(ELE_FILENAME).remove();
+  }
+
+  QFile nodesFile(NODES_FILENAME);
+  if (!nodesFile.open(QIODevice::ReadWrite)) {
+    return QVector<QPair<int, int>>();
+  }
+
+  QTextStream stream(&nodesFile);
+  stream << points.size() << " 2 0 0\n";
+  for (int i = 0; i < points.size(); i++) {
+    stream << i+1 << " " << points[i].x() << " " << points[i].y() << "\n";
+  }
+
+  nodesFile.close();
+
+  QProcess triangulation_process;
+  triangulation_process.start("triangle", QStringList() << FILE_PREFIX);
+  triangulation_process.waitForFinished();
+
+  QFile trianglesFile(ELE_FILENAME);
+  if (!trianglesFile.open(QIODevice::ReadOnly)) {
+    return QVector<QPair<int, int>>();
+  }
+
+  QVector<QPair<int, int>> edges;
+
+  QTextStream stream2(&trianglesFile);
+  QString temp_line;
+  temp_line = stream2.readLine();
+  int number_of_triangles = 0, nodes_per_triangle = 0, number_of_attr = 0;
+  QTextStream(&temp_line) >> number_of_triangles >> nodes_per_triangle
+                          >> number_of_attr;
+  for (int i = 0; i < number_of_triangles; i++) {
+    temp_line = stream2.readLine();
+    int n_triangle = 0, node1 = 0, node2 = 0, node3 = 0;
+    QTextStream(&temp_line) >> n_triangle >> node1 >> node2 >> node3;
+    edges.push_back(QPair<int, int>(node1 - 1, node2 - 1));
+    edges.push_back(QPair<int, int>(node1 - 1, node3 - 1));
+    edges.push_back(QPair<int, int>(node2 - 1, node3 - 1));
+  }
+
+  trianglesFile.close();
+
+  return edges;
 }
 
 // Edge is distance + indices of two points.
 typedef std::pair<double,std::pair<int,int>> Edge;
 
-QVector<QPair<QPoint, QPoint>> Prima_Dijkstra_MlogN(QVector<QPoint>& points) {
+QVector<QPair<QPoint, QPoint>>
+Prima_Dijkstra_MlogN(QVector<QPoint>& points, QVector<QPair<int, int>> graph) {
     const int sz = points.size();
 
     auto cmp = [](Edge left, Edge right) { return left.first > right.first;};
@@ -30,12 +93,19 @@ QVector<QPair<QPoint, QPoint>> Prima_Dijkstra_MlogN(QVector<QPoint>& points) {
     QVector<QPair<QPoint, QPoint>> edges;
     edges.reserve(sz - 1);
 
+    // Morph graph from list of edges into a list of incidency.
+    QVector<QList<int>> g(sz, QList<int>());
+    for (QPair<int, int>& edge : graph) {
+      g[edge.first].push_back(edge.second);
+      g[edge.second].push_back(edge.first);
+    }
+
     QVector<bool> used(sz, false);
 
     // 0 is the first point to be added.
-    for (int i = 1; i < sz; i++) {
-        std::pair<int, int> edge(0, i);
-        q.push(Edge(dist(points[0], points[i]), edge));
+    for (int node : g[0]) {
+        std::pair<int, int> edge(0, node);
+        q.push(Edge(dist(points[0], points[node]), edge));
     }
     used[0] = true;
 
@@ -64,11 +134,11 @@ QVector<QPair<QPoint, QPoint>> Prima_Dijkstra_MlogN(QVector<QPoint>& points) {
 
         used[new_node] = true;
 
-        for (int i = 0; i < sz; i++) {
-            if (!used[i]) {
-                std::pair<int, int> edge(new_node, i);
-                q.push(Edge(dist(points[new_node], points[i]), edge));
-            }
+        for (int node : g[new_node]) {
+          if (!used[node]) {
+            std::pair<int, int> edge(new_node, node);
+            q.push(Edge(dist(points[new_node], points[node]), edge));
+          }
         }
     }
 
@@ -117,6 +187,23 @@ QVector<QPair<QPoint, QPoint>> Prima_Dijkstra_N3(QVector<QPoint>& points) {
     return edges;
 }
 
+QVector<QPair<QPoint, QPoint>>
+Prima_Dijkstra_FullGraph(QVector<QPoint>& points) {
+  QVector<QPair<int, int>> full_graph;
+  for (int i = 0; i < points.size(); i++) {
+    for (int j = i + 1; j < points.size(); j++) {
+      full_graph.push_back(QPair<int, int>(i, j));
+    }
+  }
+  return Prima_Dijkstra_MlogN(points, full_graph);
+}
+
+QVector<QPair<QPoint, QPoint>>
+Prima_Dijkstra_Triangulation(QVector<QPoint>& points,
+                             QVector<QPair<int, int>> triangulation) {
+  return Prima_Dijkstra_MlogN(points, triangulation);
+}
+
 // THE END OF THE ALGORITHM ////////////////////////////////////////////////////
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -140,22 +227,32 @@ void MainWindow::paintEvent(QPaintEvent*) {
     for (QPoint point : points_) {
         p.drawEllipse(point, 3, 3);
     }
+
+    p.setPen(Qt::green);
+    for (QPair<int, int> edge : triangulation_) {
+      p.drawLine(points_[edge.first], points_[edge.second]);
+    }
+
+    p.setPen(Qt::black);
     for (QPair<QPoint, QPoint> edge : edges_) {
         p.drawLine(edge.first, edge.second);
     }
 }
 
-void MainWindow::on_pushButton_clicked() {
-    edges_ = CalculateEuclideanMinimumSpanningTree_Fast(points_);
-    repaint();
-}
-
 void MainWindow::on_pushButton_2_clicked() {
+    triangulation_.clear();
     edges_ = Prima_Dijkstra_N3(points_);
     repaint();
 }
 
 void MainWindow::on_pushButton_3_clicked() {
-    edges_ = Prima_Dijkstra_MlogN(points_);
+    triangulation_.clear();
+    edges_ = Prima_Dijkstra_FullGraph(points_);
     repaint();
+}
+
+void MainWindow::on_pushButton_4_clicked() {
+  triangulation_ = CalculateDelaunayTriangularion(points_);
+  edges_ = Prima_Dijkstra_Triangulation(points_, triangulation_);
+  repaint();
 }
