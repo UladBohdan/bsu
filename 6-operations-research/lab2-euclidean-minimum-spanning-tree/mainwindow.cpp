@@ -71,7 +71,7 @@ CalculateDelaunayTriangularion(QVector<QPoint>& points) {
   return edges;
 }
 
-QVector<QPair<QPoint, QPoint>>
+QVector<QPair<int, int>>
 Prima_Dijkstra_MlogN(QVector<QPoint>& points, QVector<QPair<int, int>> graph) {
   // Edge is distance + indices of two points.
   typedef std::pair<double,std::pair<int,int>> Edge;
@@ -81,7 +81,7 @@ Prima_Dijkstra_MlogN(QVector<QPoint>& points, QVector<QPair<int, int>> graph) {
   auto cmp = [](Edge left, Edge right) { return left.first > right.first;};
   std::priority_queue<Edge, std::vector<Edge>, decltype(cmp)> q(cmp);
 
-  QVector<QPair<QPoint, QPoint>> edges;
+  QVector<QPair<int, int>> edges;
   edges.reserve(sz - 1);
 
   // Morph graph from list of edges into a list of incidency.
@@ -120,8 +120,8 @@ Prima_Dijkstra_MlogN(QVector<QPoint>& points, QVector<QPair<int, int>> graph) {
     }
     q.pop();
 
-    edges.push_back(QPair<QPoint, QPoint>(points[min_edge.second.first],
-                    points[min_edge.second.second]));
+    edges.push_back(QPair<int, int>(min_edge.second.first,
+                                    min_edge.second.second));
 
     used[new_node] = true;
 
@@ -136,7 +136,7 @@ Prima_Dijkstra_MlogN(QVector<QPoint>& points, QVector<QPair<int, int>> graph) {
   return edges;
 }
 
-QVector<QPair<QPoint, QPoint>> Prima_Dijkstra_N3(QVector<QPoint>& points) {
+QVector<QPair<int, int>> Prima_Dijkstra_N3(QVector<QPoint>& points) {
   const int sz = points.size();
 
   QVector<QVector<double>> matr(sz, QVector<double>(sz));
@@ -146,7 +146,7 @@ QVector<QPair<QPoint, QPoint>> Prima_Dijkstra_N3(QVector<QPoint>& points) {
     }
   }
 
-  QVector<QPair<QPoint, QPoint>> edges;
+  QVector<QPair<int, int>> edges;
   edges.reserve(sz - 1);
 
   QVector<bool> used(sz, false);
@@ -170,15 +170,14 @@ QVector<QPair<QPoint, QPoint>> Prima_Dijkstra_N3(QVector<QPoint>& points) {
         }
       }
     }
-    edges.push_back(QPair<QPoint, QPoint>(points[min_start], points[min_end]));
+    edges.push_back(QPair<int, int>(min_start, min_end));
     used[min_end] = true;
   }
 
   return edges;
 }
 
-QVector<QPair<QPoint, QPoint>>
-Prima_Dijkstra_FullGraph(QVector<QPoint>& points) {
+QVector<QPair<int, int>> Prima_Dijkstra_FullGraph(QVector<QPoint>& points) {
   QVector<QPair<int, int>> full_graph;
   for (int i = 0; i < points.size(); i++) {
     for (int j = i + 1; j < points.size(); j++) {
@@ -188,7 +187,7 @@ Prima_Dijkstra_FullGraph(QVector<QPoint>& points) {
   return Prima_Dijkstra_MlogN(points, full_graph);
 }
 
-QVector<QPair<QPoint, QPoint>>
+QVector<QPair<int, int>>
 Prima_Dijkstra_Triangulation(QVector<QPoint>& points,
                              QVector<QPair<int, int>> triangulation) {
   return Prima_Dijkstra_MlogN(points, triangulation);
@@ -224,8 +223,8 @@ void MainWindow::paintEvent(QPaintEvent*) {
   }
 
   p.setPen(Qt::black);
-  for (QPair<QPoint, QPoint> edge : edges_) {
-    p.drawLine(edge.first, edge.second);
+  for (QPair<int, int> edge : edges_) {
+    p.drawLine(points_[edge.first], points_[edge.second]);
   }
 }
 

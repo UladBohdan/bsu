@@ -42,8 +42,9 @@ private:
 
   QVector<QPoint> points_;
 
+  // Integers are indices of Points from points_.
   QVector<QPair<int, int>> triangulation_;
-  QVector<QPair<QPoint, QPoint>> edges_;
+  QVector<QPair<int, int>> edges_;
 };
 
 #endif  // MAINWINDOW_H_
