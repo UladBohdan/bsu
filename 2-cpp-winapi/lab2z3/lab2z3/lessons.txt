@@ -1,0 +1,25 @@
+1
+G&A lect 521
+G&A pract 234
+DMiML lect 605
+2
+Matan lect 605
+DMiML pract 250
+Programming pract 508
+Programming lect 605
+3
+Programming lect 605
+Programming pract 604
+English pract 519
+Swimming pract swimming-pool
+4
+G&A lect 521
+G&A pract 257
+Matan pract 521a
+5
+Matan lect 605
+Programming pract 334
+Matan pract 255
+6
+SP pract 314
+English pract 519
