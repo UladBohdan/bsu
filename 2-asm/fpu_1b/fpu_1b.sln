@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "fpu_1b", "fpu_1b\fpu_1b.vcxproj", "{9BF3CA6F-D839-4B2B-96D9-C5CA74970725}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9BF3CA6F-D839-4B2B-96D9-C5CA74970725}.Debug|Win32.ActiveCfg = Debug|Win32
+		{9BF3CA6F-D839-4B2B-96D9-C5CA74970725}.Debug|Win32.Build.0 = Debug|Win32
+		{9BF3CA6F-D839-4B2B-96D9-C5CA74970725}.Release|Win32.ActiveCfg = Release|Win32
+		{9BF3CA6F-D839-4B2B-96D9-C5CA74970725}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
