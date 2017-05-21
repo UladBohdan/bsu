@@ -1,0 +1,91 @@
+\documentclass{article}
+
+\usepackage{geometry}
+ \geometry{
+ a4paper,
+ total={170mm,257mm},
+ left=20mm,
+ top=20mm,
+ }
+
+\usepackage[utf8]{inputenc}
+\usepackage[russian]{babel}
+
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{multicol}
+
+\usepackage[none]{hyphenat}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{1em}
+
+\begin{document}
+
+{\large
+
+Богдан Уладзіслаў
+
+ФПМІ, 3 курс, 3 група
+
+\vspace{5mm}
+
+Лабараторная работа №5
+
+Пошук аптымальнай стратэгіі прывядзеннем да задачы лінейнага праграмавання
+
+}
+
+\vspace{15mm}
+
+Заданне 3 главы 2.2, варыянт $c$
+
+Дадзеная матрычная гульня з матрыцай:
+
+\[
+H = (h_ij)_{n\times m} =
+ \begin{pmatrix}
+  6 & 4 & 1 & 3 \\
+  1 & 5 & 2 & 1 \\
+  -1 & 3 & 3 & 3 \\
+  2 & 5 & -2 & -2
+ \end{pmatrix}
+\]
+
+Знойдзем ніжняе і верхняе значэнне гульні: $\alpha = 2, \beta = 3$. $\alpha \neq \beta$ -
+то бок гульня не вырашальная ў чыстых стратэгіях. Пабудуем пару дваістых задач
+лінейнага праграмавання:
+
+\begin{multicols}{2}
+
+\begin{equation}
+\begin{aligned}
+\sum_{i=1}^{4} x_i \to \min\\
+6 x_1 + x_2 - x_3 + 2 x_4 \geq 1,\\
+4 x_1 + 5 x_2 + 3 x_3 + 5 x_4 \geq 1,\\
+1 x_1 + 2 x_2 + 3 x_3 - 2 x_4 \geq 1,\\
+3 x_1 + x_2 + 3 x_3 - 2 x_4 \geq 1,\\
+x_i \geq 0, i = \overline{1, 4}
+\end{aligned}
+\end{equation}
+
+\begin{equation}
+\begin{aligned}
+\sum_{j=1}^{4} y_j \to \max\\
+6 y_1 + 4 y_2 + y_3 + 3 y_4 \leq 1,\\
+y_1 + 5 y_2 + 2 y_3 + 1 y_4 \leq 1,\\
+- y_1 + 3 y_2 + 3 y_3 + 3 y_4 \leq 1,\\
+2 y_1 + 5 y_2 - 2 y_3 - 2 y_4 \leq 1,\\
+y_j \geq 0, j = \overline{1, 4}
+\end{aligned}
+\end{equation}
+
+\end{multicols}
+
+Рашаем задачы сімплекс-метадам, атрымліваем: $x_1 = 0.2, x_2 = 0.4, x_3 = x_4 = 0, y_1 = 0.1053, y_2 = 0, y_3 = 0.3684, y_4 = 0$.
+Для першага гульца значэнне гульні $I_1 = 1 / \sum_{i=1}^4 = 1 / 0.6 = 1.6667$,
+аптымальная стратэгія $p_i = x_i I_1 = (0.3333, 0.6667, 0, 0)^T$.
+Аналагічна для другога гульца $I_2 = 1 / \sum_{j=1}^4 = 1 / 0.4737 = 2.111$,
+аптымальная стратэгія $q_j = y_j I_2 = (0.2223, 0, 0.7777, 0)^T$.
+
+\end{document}
