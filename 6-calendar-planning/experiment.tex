@@ -1,0 +1,202 @@
+\documentclass{article}
+
+\usepackage{geometry}
+ \geometry{
+ a4paper,
+ total={170mm,257mm},
+ left=20mm,
+ top=20mm,
+ }
+
+\usepackage[utf8]{inputenc}
+\usepackage[russian]{babel}
+
+\usepackage{amsfonts}
+\usepackage{amsmath}
+
+\usepackage[none]{hyphenat}
+
+\usepackage{color}
+
+\usepackage{tikz}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{1em}
+
+\begin{document}
+
+{\large
+
+Богдан Уладзіслаў
+
+ФПМІ, 3 курс, 3 група
+
+\vspace{5mm}
+
+\textbf{Практычны эксперымент па тэме артыкула}
+
+\vspace{5mm}
+
+Peter Brucker, Rong Qu, Edmund Burke \\
+Personnel scheduling: Models and complexity \\
+\textit{Кадравае планаванне: мадэлі і складанасць}
+}
+
+\vspace{5mm}
+
+\subsection*{Пастаноўка задачы і апісанне алгарытма}
+
+Агулам, артыкул носіць класіфікацыйны і тэарэтычны характар. Для рэалізацыі эксперыментальнай
+часткі, разгледзім Лемму 1:
+
+\textit{Спецыяльны выпадак прапанаванай матэматычнай мадэлі, у якой попыт кожнай працы - пастаянны,
+і кожны супрацоўнік даступны ў любы час, можа быць сфармуляваны як задача пошуку плыні мінімальнага кошту.}
+
+У артыкуле прыводзіцца канструктыўны доказ: сцвярджаецца, што рашэнне задачы прывядзецца да
+рашэння задачы пошуку плыні мінімальнага кошту, калі для кожнага супрацоўніка ўвесці вяршыню $e$, для кожнай
+працы вяршыню $j$, для кожнай пары $(e, j)$ праведзеная дуга з коштам $c_{ej}$ тады і толькі тады, калі $j \in Q_e$,
+дзе $Q_e$ - мноства працаў, на якія кваліфікаваны супрацоўнік $e$.
+
+Прывядзем апісанне нашай задачы. Маем часавы гарызонт (часавую стужку) $[0, T]$ падзелены на перыяды $[t, t+1[,
+t = 0, 1, ..., T-1$, за гэты час $m$ працаў павінныя быць выкананыя. $D_j(t) = D_j, j=1,...,m$ - колькасць супрацоўнікаў,
+патрэбная, каб выканаць працу $j$. Маем мноства $E$ з $n$ супрацоўнікаў, з кожным супрацоўнікам асацыяванае мноства
+$Q_e$ задачаў, на якія гэты супрацоўнік кваліфікаваны. Кожны супрацоўнік даступны ў любы час, то бок
+$w_e(t) = 1, \forall e \in Q_e, \forall t \in [0, T]$. Шаблон працы для кожнага супрацоўніка ўяўляе сабой
+вектар $\pi = \pi(j,t)$, дзе $\pi(j,t) = 1$ тады і толькі тады, калі ў перыяд часу $[t, t+1[$ супрацоўнік будзе
+выконваць працу $j$.
+
+Мэта - мінімізаваць суму штрафаў $\sum c_{ej}$
+
+Такім чынам, нам трэба скласці такі расклад, дзе кожны супрацоўнік робіць максімум адну працу (але на працягу ўсяго часу),
+бо пры нашых умовах мяняць працу аднаму супрацоўніку не дае ніякай перавагі, кожная праца выконваецца роўна $D_j$ супрацоўнікамі,
+пры гэтым сумарны кошт працы - мінімальны.
+
+Задача можа быць праілюстраваная графам наступнага выгляду:
+
+\begin{tikzpicture}
+    \node[shape=circle,draw=black] (A) at (0,0) {S};
+    \node[shape=circle,draw=black] (B1) at (3,2) {$e_1$};
+    \node[shape=circle,draw=black] (B2) at (3,1) {$e_2$};
+    \node[shape=circle,draw=black] (B3) at (3,0) {$e_3$};
+    \node[shape=circle,draw=black] (B4) at (3,-1) {$e_4$};
+    \node[shape=circle,draw=black] (B5) at (3,-2) {$e_5$};
+    \node[shape=circle,draw=black] (C1) at (6,2) {$j_1$};
+    \node[shape=circle,draw=black] (C2) at (6,1) {$j_2$};
+    \node[shape=circle,draw=black] (C3) at (6,0) {$j_3$};
+    \node[shape=circle,draw=black] (C4) at (6,-1) {$j_4$};
+    \node[shape=circle,draw=black] (C5) at (6,-2) {$j_5$};
+    \node[shape=circle,draw=black] (D) at (9,0) {T};
+
+    \path [->] (A) edge node[left] {} (B1);
+    \path [->] (A) edge node[left] {} (B2);
+    \path [->] (A) edge node[left] {} (B3);
+    \path [->] (A) edge node[left] {} (B4);
+    \path [->] (A) edge node[left] {} (B5);
+
+    \path [->] (B1) edge node[left] {} (C1);
+    \path [->] (B1) edge node[left] {} (C3);
+    \path [->] (B2) edge node[left] {} (C3);
+    \path [->] (B2) edge node[left] {} (C5);
+    \path [->] (B3) edge node[left] {} (C4);
+    \path [->] (B3) edge node[left] {} (C1);
+    \path [->] (B4) edge node[left] {} (C2);
+    \path [->] (B4) edge node[left] {} (C4);
+    \path [->] (B5) edge node[left] {} (C3);
+    \path [->] (B5) edge node[left] {} (C5);
+
+    \path [->] (C1) edge node[left] {} (D);
+    \path [->] (C2) edge node[left] {} (D);
+    \path [->] (C3) edge node[left] {} (D);
+    \path [->] (C4) edge node[left] {} (D);
+    \path [->] (C5) edge node[left] {} (D);
+\end{tikzpicture}
+
+Дугам, якія вядуць з $S$ да супрацоўнікаў, паставім адзінкавыя прапускныя здольнасці і нулявыя кошты;
+дугам, якія ідуць ад супрацоўнікаў да працаў - адзінкавыя прапускныя здольнасці і кошты $c_{ej}$;
+дугам, якія вядуць ад працаў да $T$ - прапускныя здольнасці $D_j$ і нулявыя кошты.
+
+Такім чынам, мы прывялі рашэнне нашай задачы да рашэння задачы пошуку плыні мінімальнага кошту ў сетцы.
+Такая задача можа быць эфектыўна вырашана алгарытмам Басакера-Гоўэна: гэта, па сутнасці, алгарытм Форда-Фалкерсана,
+у якім наяўнасць шляху паміж крыніцай і стокам знаходзіцца не bfs/dfs-ам, а, напрыклад, алгарытмам
+Форда-Бэлмана, дзе вагі дугаў - кошты.
+
+\subsection*{Прыклад}
+
+Разгледзім наступны прыклад задачы.
+7 супрацоўнікаў, 3 працы.
+Першыя чатыры супрацоўнікі кваліфікаваныя рабіць першую альбо другую працу, астатнія тры - другую альбо трэцюю.
+Першая праца патрабуе два супрацоўніка для выканання, другая - тры, трэцяя - аднаго.
+Расставім кошты якім-небудзь чынам, атрымліваем наступны граф (сетку):
+
+\begin{tikzpicture}
+    \node[shape=circle,draw=black] (A) at (0,0) {S};
+    \node[shape=circle,draw=black] (B1) at (3,6) {$e_1$};
+    \node[shape=circle,draw=black] (B2) at (3,4) {$e_2$};
+    \node[shape=circle,draw=black] (B3) at (3,2) {$e_3$};
+    \node[shape=circle,draw=black] (B4) at (3,0) {$e_4$};
+    \node[shape=circle,draw=black] (B5) at (3,-2) {$e_5$};
+    \node[shape=circle,draw=black] (B6) at (3,-4) {$e_6$};
+    \node[shape=circle,draw=black] (B7) at (3,-6) {$e_7$};
+    \node[shape=circle,draw=black] (C1) at (9,5) {$j_1$};
+    \node[shape=circle,draw=black] (C2) at (9,0) {$j_2$};
+    \node[shape=circle,draw=black] (C3) at (9,-5) {$j_3$};
+    \node[shape=circle,draw=black] (D) at (15,0) {T};
+
+    \path [->] (A) edge node[left] {$1,0$} (B1);
+    \path [->] (A) edge node[left] {$1,0$} (B2);
+    \path [->] (A) edge node[left] {$1,0$} (B3);
+    \path [->] (A) edge node[left] {$1,0$} (B4);
+    \path [->] (A) edge node[left] {$1,0$} (B5);
+    \path [->] (A) edge node[left] {$1,0$} (B6);
+    \path [->] (A) edge node[left] {$1,0$} (B7);
+
+    \path [->] (B1) edge node[left] {$1,4$} (C1);
+    \path [->] (B1) edge node[right] {$1,1$} (C2);
+    \path [->] (B2) edge node[left] {$1,3$} (C1);
+    \path [->] (B2) edge node[right] {$1,2$} (C2);
+    \path [->] (B3) edge node[left] {$1,2$} (C1);
+    \path [->] (B3) edge node[right] {$1,3$} (C2);
+    \path [->] (B4) edge node[left] {$1,1$} (C1);
+    \path [->] (B4) edge node[right] {$1,4$} (C2);
+
+    \path [->] (B5) edge node[left] {$1,6$} (C2);
+    \path [->] (B5) edge node[right] {$1,8$} (C3);
+    \path [->] (B6) edge node[left] {$1,7$} (C2);
+    \path [->] (B6) edge node[right] {$1,7$} (C3);
+    \path [->] (B7) edge node[left] {$1,8$} (C2);
+    \path [->] (B7) edge node[right] {$1,5$} (C3);
+
+    \path [->] (C1) edge node[right] {$2,0$} (D);
+    \path [->] (C2) edge node[] {$3,0$} (D);
+    \path [->] (C3) edge node[right] {$1,0$} (D);
+\end{tikzpicture}
+
+Пара $(x,y)$ азначае адпаведна прапускную здольнасць і кошт за праход адзінкі.
+
+Сфармавалі сетку - запускаем алгарытм. Атрымліваем вынік:
+\begin{verbatim}
+Schedule: 
+Job 1  by 3
+Job 1  by 4
+Job 2  by 1
+Job 2  by 2
+Job 2  by 5
+Job 3  by 7
+Max flow:  6
+Min cost:  17
+\end{verbatim}
+
+То бок кошт мінімізуецца пры наступным раскладзе:
+
+$j_1: e_3, e_4$
+
+$j_2: e_1, e_2, e_5$
+
+$j_3: e_7$.
+
+Заўважым, што калі значэнне плыні не роўнае суме попытаў усіх працаў, гэта азначае,
+што расклада не існуе.
+
+Тэкставы файл з уваходнымі дадзенымі для гэтага прыклада і рэалізацыю алгарытма на C++ далучаю асобнымі файламі.
+
+\end{document}
