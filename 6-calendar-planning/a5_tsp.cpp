@@ -43,8 +43,13 @@ int main() {
       double edge_value = g[order[i-1]][order[i]];
       if (edge_value == MAGIC) {
         a_route = false;
+        break;
       }
       new_route += edge_value;
+      if (new_route >= min_found) {
+        a_route = false;
+        break;
+      }
     }
     double edge_value = g[order[n-1]][order[0]];
     if (edge_value == MAGIC) {
