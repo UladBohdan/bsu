@@ -7,15 +7,18 @@
 
 using namespace std;
 
-const int INF=999999999;
+const double INF=999999999.;
 const int s=0;      // place to start
+
+// Reading from 0-based file.
+// Output is 1-based.
 
 int main()
 {
     int n, m, t1, t2, t3;
     ifstream fin("data/dijkstra.txt");
     fin >> n >> m;
-    vector < stack <pair <int, int> > > g(m);
+    vector < stack <pair <int, double> > > g(m);
     vector <int> d(n, INF), from(n,0);
     vector <bool> used(n, false);
     d[s]=0;
@@ -23,7 +26,8 @@ int main()
     {
         fin >> t1 >> t2 >> t3;
         g[t1].push(make_pair(t2,t3));
-        g[t2].push(make_pair(t1,t3));
+        // Uncomment in case you're dealing with unoriented graph.
+        // g[t2].push(make_pair(t1,t3));
     }
     for (int i=0; i<n; i++)
     {
@@ -44,25 +48,24 @@ int main()
 
         }
     }
-    for (int i=0; i<n; i++)
+    for (int i = 0; i < n; i++)
     {
-        if (d[i]==INF)
+        if (d[i] == INF)
         {
             cout << i << ", Impossible to destinate from " << s << endl;
             continue;
         }
-        cout << i << ", distance: " << d[i] << ". How to get: ";
-        stack <int> temp;
+        cout << i + 1 << ", distance: " << d[i] << ". How to get: ";
+        stack<int> temp;
         temp.push(i);
-        while (temp.top()!=s)
+        while (temp.top() != s) {
             temp.push(from[temp.top()]);
-        while (!temp.empty())
-        {
-            cout << temp.top() << " ";
+        }
+        while (!temp.empty()) {
+            cout << temp.top() + 1 << " ";
             temp.pop();
         }
         cout << endl;
     }
     return 0;
 }
-
