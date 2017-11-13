@@ -78,6 +78,7 @@ CREATE TABLE tax_payments (
   id NUMBER PRIMARY KEY,
   name VARCHAR2(200) NOT NULL,
   period VARCHAR2(200) NOT NULL,
+  period_start DATE NOT NULL,
 
   CONSTRAINT period_check CHECK (period in ('month', 'year')) ENABLE,
   CONSTRAINT name_check CHECK (name in ('annual', 'area', 'property',
