@@ -1,0 +1,20 @@
+body {
+  text-align: center;
+}
+
+.no-display {
+  display: none;
+}
+
+.question {
+  display: inline-block;
+}
+
+.btn {
+  margin-left: 15px;
+}
+
+.flag {
+  vertical-align: text-bottom;
+  width: 55px;
+}

@@ -1,0 +1,40 @@
+# Defining countries.
+IF continent IS Europe AND population IS 12to60m AND government_system IS semi_presidential_republic AND state_structure IS unitary THEN country IS Ukraine.
+IF continent IS Europe AND population IS 60to100m AND government_system IS constitutional_monarchy AND state_structure IS unitary THEN country IS UnitedKingdom.
+IF continent IS Asia AND population IS more100m AND government_system IS constitutional_monarchy AND state_structure IS unitary THEN country IS Japan.
+IF continent IS Europe AND population IS 60to100m AND government_system IS parliamentary_republic AND state_structure IS unitary THEN country IS Germany.
+IF continent IS Australia AND population IS 3to12m AND government_system IS parliamentary_monarchy AND state_structure IS unitary THEN country IS NewZealand.
+IF continent IS America AND population IS more100m AND government_system IS presidential_republic AND state_structure IS federative THEN country IS USA.
+IF continent IS America AND population IS 12to60m AND government_system IS parliamentary_republic AND state_structure IS federative THEN country IS Canada.
+# Some prompts.
+PROMPT continent QUESTION What's the continent? ANSWERS Europe Asia Australia America.
+PROMPT population QUESTION What's the population? ANSWERS less3m 3to12m 12to60m 60to100m more100m.
+PROMPT state_structure QUESTION How's state is structured? ANSWERS federative unitary.
+# Defining governing systems.
+IF sole_governing IS True AND government_type IS Republic THEN government_system IS presidential_republic.
+IF sole_governing IS True AND government_type IS Monarchy THEN government_system IS constitutional_monarchy.
+IF sole_governing IS Kindof AND government_type IS Republic THEN government_system IS semi_presidential_republic.
+IF sole_governing IS False AND government_type IS Republic THEN government_system IS parliamentary_republic.
+IF sole_governing IS False AND government_type IS Monarchy THEN government_system IS parliamentary_monarchy.
+PROMPT sole_governing QUESTION The only person is the head? ANSWERS True False Kindof.
+PROMPT government_type QUESTION What's the type of government? ANSWERS Republic Monarchy.
+# State structures.
+# ISO country codes.
+ISO Ukraine UA.
+ISO UnitedKingdom GB.
+ISO Germany DE.
+ISO Japan JP.
+ISO NewZealand NZ.
+ISO USA US.
+ISO Canada CA.
+# Prettifying the output.
+MAP UnitedKingdom United Kingdom.
+MAP NewZealand New Zealand.
+MAP less3m less than 3 million.
+MAP 3to12m 3 to 12 million.
+MAP 12to60m 12 to 60 million.
+MAP 60to100m 60 to 100 million.
+MAP more100m more than 100 million.
+MAP Kindof Kind Of.
+MAP federative Federation.
+MAP unitary Unitary State.
