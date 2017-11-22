@@ -1,7 +1,11 @@
 var round = 0;
 
 function start() {
-  document.getElementById("startBtn").className = "no-display"
+  var target = document.getElementById("newTarget").value
+  if (target) {
+    httpGet("/switchTarget/" + target + "/")
+  }
+  document.getElementById("startSection").className = "no-display"
   processResponse(httpGet("/next/"))
 }
 
@@ -61,7 +65,7 @@ function unlockButton() {
 }
 
 function startOver() {
-  document.getElementById("startBtn").className = "button is-success"
+  document.getElementById("startSection").className = ""
   document.getElementById("questions").innerHTML = ""
   document.getElementById("result").innerHTML = ""
   document.getElementById("reloadBtn").className = "no-display"

@@ -10,7 +10,10 @@
 <body>
   <br />
   <h1 class="title is-1">I'll guess your country!</h1>
-  <button onclick="start()" class="button is-success" id=startBtn>Start!</button>
+  <div id="startSection">
+    <input class="input change-country" type="text" placeholder="Not a 'country'?" id="newTarget">
+    <button onclick="start()" class="button is-success">Start!</button>
+  </div>
   <br><br>
   <div id="questions"></div>
   <br><br>

@@ -8,8 +8,6 @@ const (
 	ruleCorrect   = -1
 	ruleIncorrect = -2
 	ruleUndefined = 2
-
-	globalTargetAttribure = "country"
 )
 
 type contextEntry struct {
@@ -17,6 +15,8 @@ type contextEntry struct {
 }
 
 var (
+	globalTargetAttribure = "country"
+
 	targetsStack []string
 	// maps attributes to appropriate values.
 	context = make(map[string]string)

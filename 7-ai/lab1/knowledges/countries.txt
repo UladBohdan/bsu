@@ -38,3 +38,8 @@ MAP more100m more than 100 million.
 MAP Kindof Kind Of.
 MAP federative Federation.
 MAP unitary Unitary State.
+MAP presidential_republic Presidental Republic.
+MAP constitutional_monarchy Constitutional Monarchy.
+MAP semi_presidential_republic Semi-Presidential Republic.
+MAP parliamentary_republic Parliamentary Republic.
+MAP parliamentary_monarchy Parliamentary Monarchy.

@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	port = "8080"
+	port = "8082"
 )
 
 type webInteractor struct {
@@ -50,6 +50,8 @@ func (c *webInteractor) startServer() {
 
 	http.HandleFunc("/next/", c.nextHandler)
 
+	http.HandleFunc("/switchTarget/", c.switchTargetHandler)
+
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "./web_client/index.html")
 	})
@@ -87,4 +89,11 @@ func (c *webInteractor) nextHandler(w http.ResponseWriter, r *http.Request) {
 		log.Printf("failed: %v", msg)
 		fmt.Fprintf(w, `{"Failure":"%v"}`, msg)
 	}
+}
+
+func (c *webInteractor) switchTargetHandler(w http.ResponseWriter, r *http.Request) {
+	ss := strings.Split(r.URL.Path, "/")
+	newTarget := ss[len(ss)-2]
+	globalTargetAttribure = newTarget
+	log.Printf("global target attribute changed to %q", newTarget)
 }

@@ -38,7 +38,7 @@ var (
 
 	naturalLanguage = make(map[string]string)
 
-	langRgxp = `[a-zA-Z0-9'?_ ]+`
+	langRgxp = `[a-zA-Z0-9'?\-_ ]+`
 
 	ruleRgxp    = regexp.MustCompile(`^IF` + langRgxp + `\.$`)
 	promptRgxp  = regexp.MustCompile(`^PROMPT` + langRgxp + `\.$`)
