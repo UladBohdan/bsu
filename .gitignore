@@ -2,6 +2,7 @@
 *.out
 build*
 *.pro.user
+.autosave
 
 ## Core latex/pdflatex auxiliary files:
 *.aux
