@@ -14,16 +14,7 @@ MainWindow::~MainWindow()
 }
 
 void MainWindow::paintEvent(QPaintEvent*) {
-    //int w = centralWidget()->size().width();
-    //int h = centralWidget()->size().height();
-
     QPainter p(this);
-  //  p.setWindow(-200,-(200*h/w),400,400*h/w);
-    p.setPen(Qt::lightGray);
-
-   // p.drawLine(w/2,0,w/2,h);
-   // p.drawLine(0,h/2,w,h/2);
-
     p.setPen(Qt::black);
     p.setBrush(QBrush(Qt::black));
 
