@@ -27,10 +27,10 @@ void generateMatrix() {
   for (int i = 0; i < N; i++) {
     double sum = 0;
     for (int j = 0; j < N; j++) {
-      A[i][j] = (i == j ? 100. : (2. * i + j) / 100000.);
-      sum += A[i][j];
-      //A[i][j] = (i == j ? 10. : (2. * i + j));
-      //sum += A[i][j] * (j+1) * (j+1);
+      //A[i][j] = (i == j ? 100. : (2. * i + j) / 100000.);
+      //sum += A[i][j];
+      A[i][j] = (i == j ? 10. : (2. * i + j));
+      sum += A[i][j] * (j+1) * (j+1); // Answers are number squares then.
     }
     A[i][N] = sum;
   }
@@ -46,6 +46,7 @@ void printMatrix(double** A, int N) {
 }
 
 void runGauss(int proc_rank) {
+
   for (int k = 0; k < N; k++) {
 
     if (proc_rank == k / R2) {
@@ -127,8 +128,12 @@ int main(int argc, char** argv) {
   sscanf(argv[1], "%d", &N);
 
   //  Q1 = (N - 1) / R1 + ((N-1)%R1 == 0 ? 0 : 1);
+  // ?
   R2 = (N - 1) / Q2 + ((N-1)%Q2 == 0 ? 0 : 1);
+  R2 = N / Q2;
   //  Q3 = N / R3 + (N%R3 == 0 ? 0 : 1);
+
+  printf("R2 %d  Q2  %d\n", R2, Q2);
 
   underSubmatrix = malloc(R2 * (N+1) * sizeof(double));
   submatrix = malloc(R2 * sizeof(double*));
@@ -136,9 +141,11 @@ int main(int argc, char** argv) {
     submatrix[i] = underSubmatrix + i * (N+1);
   }
 
+  printf("[%d] what's wrong?\n", proc_rank);
+
   if (proc_rank == ROOT) {
     generateMatrix();
-    printMatrix(A, N);
+    //printMatrix(A, N);
     printf("Matrix is generated.\n");
 
     for (int proc = 1; proc < Q2; proc++) {
@@ -150,7 +157,9 @@ int main(int argc, char** argv) {
       }
     }
   } else {
+    printf("[%d] receiving submatrix... \n", proc_rank);
     MPI_Recv(underSubmatrix, R2 * (N+1), MPI_DOUBLE, ROOT, 345, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+    printf("[%d] submatrix received.\n", proc_rank);
   }
 
   MPI_Barrier(MPI_COMM_WORLD);
