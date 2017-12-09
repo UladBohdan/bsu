@@ -14,13 +14,13 @@
    <string>Lab 1: count points inside of a rectangle</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>10</x>
       <y>10</y>
-      <width>227</width>
-      <height>61</height>
+      <width>281</width>
+      <height>62</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout">

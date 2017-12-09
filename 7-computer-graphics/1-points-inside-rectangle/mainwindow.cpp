@@ -5,13 +5,12 @@
 
 #include <QtAlgorithms>
 #include <QDateTime>
-#include <QDebug>
 #include <QMap>
 #include <QSet>
 
 ////////// ALGORITHM //////////////////////////////////////////////////////////
 
-const int N = 50;
+const int N = 50000;
 
 QPoint temp_a, temp_b;
 int temp_state = 0; // choose between 0, 1 and 2.
@@ -20,7 +19,7 @@ QVector<QPoint> s;
 
 // Fast point lookup.
 // int is x * N + y (indices).
-QSet<int> sSet;
+QMap<int, int> sSet;
 QMap<int, int> x_to_index, y_to_index;
 QVector<int> x, y;
 // Maps point hashed (xi*N+yi) to table values.
@@ -61,7 +60,9 @@ void initialize()
     }
 
     for (QPoint& p : s) {
-        sSet.insert(x_to_index[p.x()] * N + y_to_index[p.y()]);
+        int hash = x_to_index[p.x()] * N + y_to_index[p.y()];
+        int val = sSet.value(hash, 0);
+        sSet.insert(hash, val + 1);
     }
 
     // quadratic loop to fill in the table.
@@ -71,10 +72,9 @@ void initialize()
                 table.insert(i * N + j, 0);
                 continue;
             }
-            bool pFound = ( sSet.find((i-1) * N + j - 1) != sSet.end() );
+            int count = sSet.value((i-1) * N + j - 1, 0);
             table.insert(i * N + j,
-                table[(i-1)*N+j] + table[i*N+j-1] - table[(i-1)*N+j-1] +
-                    (pFound ? 1 : 0));
+                table[(i-1)*N+j] + table[i*N+j-1] - table[(i-1)*N+j-1] + count);
         }
     }
 }
@@ -90,7 +90,9 @@ int run_algo(QPoint& a, QPoint& b)
     int iy1 = std::lower_bound(y.begin(), y.end(), y1) - y.begin();
     int iy2 = std::lower_bound(y.begin(), y.end(), y2) - y.begin();
 
-    qDebug() << "Indices:  x: " << ix1 << " " << ix2 << "   y: " << iy1 << " " << iy2;
+    // Fixing a bug.
+    std::swap(ix1, iy1);
+    std::swap(ix2, iy2);
 
     return table[ix2*N+iy2] - table[ix1*N+iy2] - table[ix2*N+iy1] + table[ix1*N+iy1];
 }
@@ -113,6 +115,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    ui->label->setStyleSheet("QLabel { background-color : white; color : red; }");
 }
 
 MainWindow::~MainWindow()
@@ -155,8 +158,14 @@ void MainWindow::paintEvent(QPaintEvent*) {
     p.setPen(Qt::black);
     p.setBrush(QBrush(Qt::lightGray));
 
-    for (QPoint point : s) {
-        p.drawEllipse(point, 3, 3);
+    if (N < 100) {
+        for (QPoint point : s) {
+            p.drawEllipse(point, 3, 3);
+        }
+    } else {
+        for (QPoint point : s) {
+            p.drawPoint(point);
+        }
     }
 }
 
@@ -168,7 +177,7 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event) {
         temp_b = event->pos();
         temp_state = 2;
         int ans = run_algo(temp_a, temp_b);
-        ui->label->setText("ANSWER: " + QString::number(ans));
+        ui->label->setText("ANSWER: " + QString::number(ans) + " / " + QString::number(N));
     } else if (temp_state == 2) {
         temp_state = 1;
         temp_a = event->pos();

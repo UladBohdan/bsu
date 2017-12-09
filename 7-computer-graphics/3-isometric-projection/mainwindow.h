@@ -5,6 +5,8 @@
 
 #include "drawareawidget.h"
 
+const int FREQ = 100; // in ms.
+
 namespace Ui {
 class MainWindow;
 }
@@ -21,6 +23,8 @@ private slots:
     void on_cubeButton_clicked();
 
     void on_parallelepipedButton_clicked();
+
+    void on_cubeRotationButton_clicked();
 
 private:
     void updateModifiers();

@@ -3,6 +3,7 @@
 
 #include <QDoubleSpinBox>
 #include <QGroupBox>
+#include <QTimer>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -11,6 +12,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     drawArea = new DrawAreaWidget(this);
     ui->horizontalLayout->addWidget(drawArea);
+    ui->modifWidget->setLayout(new QVBoxLayout());
 }
 
 MainWindow::~MainWindow()
@@ -21,15 +23,16 @@ MainWindow::~MainWindow()
 void MainWindow::on_cubeButton_clicked()
 {
     QVector<QVector3D> points;
-    points << QVector3D(0, 0, 0) << QVector3D(0, 0, 1) << QVector3D(0, 1, 0)
-           << QVector3D(1, 0, 0) << QVector3D(1, 1, 0) << QVector3D(1, 0, 1)
-           << QVector3D(0, 1, 1) << QVector3D(1, 1, 1);
+    points << QVector3D(0, 0, 0) << QVector3D(0, 0, 1) << QVector3D(0, 1, 1)
+           << QVector3D(0, 1, 0) << QVector3D(1, 0, 0) << QVector3D(1, 0, 1)
+           << QVector3D(1, 1, 1) << QVector3D(1, 1, 0);
     QVector<QPoint> edges;
-    edges << QPoint(0, 1) << QPoint(0, 2) << QPoint(0, 3)
-          << QPoint(1, 5) << QPoint(1, 6) << QPoint(2, 6)
-          << QPoint(2, 4) << QPoint(3, 4) << QPoint(3, 5)
-          << QPoint(4, 7) << QPoint(5, 7) << QPoint(6, 7);
+    edges << QPoint(0, 1) << QPoint(0, 3) << QPoint(0, 4)
+          << QPoint(3, 7) << QPoint(1, 2) << QPoint(1, 5)
+          << QPoint(2, 3) << QPoint(2, 6) << QPoint(5, 6)
+          << QPoint(4, 5) << QPoint(4, 7) << QPoint(6, 7);
     drawArea->pushShape(points, edges);
+    drawArea->isCube = true;
     updateModifiers();
 }
 
@@ -49,9 +52,9 @@ void MainWindow::on_parallelepipedButton_clicked()
 }
 
 void MainWindow::updateModifiers() {
+    // Sorry for that.
     qDeleteAll(ui->modifWidget->findChildren<QWidget*>("", Qt::FindDirectChildrenOnly));
 
-    ui->modifWidget->setLayout(new QVBoxLayout());
     for (int i = 0; i < drawArea->points.size(); i++) {
         QWidget* gpb = new QGroupBox("Point " + QString::number(i+1));
         QHBoxLayout *hbox = new QHBoxLayout();
@@ -94,3 +97,12 @@ void MainWindow::updateModifiers() {
     }
 }
 
+void MainWindow::on_cubeRotationButton_clicked() {
+    QTimer* timer = new QTimer(this);
+    connect(timer, &QTimer::timeout, [=](){
+        drawArea->angle += 10.;
+        drawArea->rotateCube();
+        updateModifiers();
+    });
+    timer->start(FREQ);
+}

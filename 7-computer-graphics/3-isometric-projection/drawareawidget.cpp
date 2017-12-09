@@ -6,7 +6,7 @@
 
 const double SCALE = 30.;
 
-DrawAreaWidget::DrawAreaWidget(QWidget *parent) : QWidget(parent) { }
+DrawAreaWidget::DrawAreaWidget(QWidget *parent) : QWidget(parent), isCube(false), angle(0.) { }
 
 void DrawAreaWidget::paintEvent(QPaintEvent*) {
     int w = size().width();
@@ -52,4 +52,33 @@ void DrawAreaWidget::updateShape() {
         projections[i] = QPoint(x * SCALE, y * SCALE);
     }
     repaint();
+}
+
+void DrawAreaWidget::rotateCube() {
+    if (!isCube) {
+        return;
+    }
+
+    double R = qSqrt(2.) / 2.;
+
+    double oy = 0.5, oz = 0.5;  // vertex center.
+    double rad = qDegreesToRadians(angle);
+
+    for (int sh = 0; sh < 5; sh+=4) {
+
+        points[0+sh].setY(oy - R * qCos(rad));
+        points[0+sh].setZ(oz + R * qSin(rad));
+
+        points[1+sh].setY(oy + R * qSin(rad));
+        points[1+sh].setZ(oz + R * qCos(rad));
+
+        points[2+sh].setY(oy + R * qCos(rad));
+        points[2+sh].setZ(oz - R * qSin(rad));
+
+        points[3+sh].setY(oy - R * qSin(rad));
+        points[3+sh].setZ(oz - R * qCos(rad));
+
+    }
+
+    updateShape();
 }

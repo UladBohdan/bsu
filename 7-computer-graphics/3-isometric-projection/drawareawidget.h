@@ -14,9 +14,14 @@ public:
     explicit DrawAreaWidget(QWidget *parent = 0);
     void pushShape(QVector<QVector3D>& points, QVector<QPoint>& edges);
     void updateShape();
+    void rotateCube();
 
     QVector<QVector3D> points;
     QVector<QPoint> edges, projections;
+
+    bool isCube;
+
+    double angle;
 
 protected:
     void paintEvent(QPaintEvent*) override;
