@@ -8,106 +8,111 @@
 
 using namespace std;
 
-class DiscreteRandomGenerator : public RandomGenerator {
+class BernoulliDistribution : public RandomGenerator {
 public:
-  DiscreteRandomGenerator(int dimension) : dimension(dimension) {}
-  virtual double Distribution(double x) = 0;
-  virtual vector<double>& Values() = 0;
-  bool TestPearson(int sz = 1000) {
-    vector<int> data(sz);
-    for (int i = 0; i < sz; i++) {
-      data[i] = this->Next();
-    }
-    vector<int> v(dimension);
-    vector<double> x = Values();
-    for (int i = 0; i < sz; i++) {
-      for (int j = 0; j < dimension; j++) {
-        if (x[j] == data[i]) {
-          v[j]++;
-          break;
-        }
-      }
-    }
-    double hi2 = 0;
-    for (int i = 0; i < dimension; i++) {
-      // TODO: to fix.
-      double p = Distribution(x[i]);
-      hi2 += ((v[i] - sz * p) * (v[i] - sz * p) * 1. / (sz * p));
-    }
-    cout << "Pearson test... ";
-    if (hi2 < 16.92){
-      cout << "passed with value" << hi2 << endl;
-      return true;
-    } else {
-      cout << "failed with value " << hi2 << endl;
-      return false;
-    }
-  }
-  virtual ~DiscreteRandomGenerator() {}
-protected:
-  int dimension;
-};
-
-class BernoulliDistribution : public DiscreteRandomGenerator {
-public:
-  BernoulliDistribution(double p) : DiscreteRandomGenerator(2) {
+  BernoulliDistribution(double p) {
     if (p < 0 || p > 1) {
       throw runtime_error("Parameter must be in [0,1] range.");
       return;
     }
     this->p = p;
-    // mcg = new MultiplicativeCongruentialGenerator(4099, 4099, 2147483647);
-    mcg = new StandartRandomGenerator();
-    values = vector<double>{0.,1.};
+    rg = new StandartRandomGenerator();
+
+    histogram.push_back(make_pair(0., p));
+    histogram.push_back(make_pair(p, 1.));
   }
-  double Distribution(double x) {
-    if (x == 0.) {
-      return 1 - p;
-    } else if (x == 1.) {
-      return p;
+
+  double Next() { return (rg->Next() <= p ? 1 : 0); }
+
+  double GetExpectation() { return p; }
+  double GetDispersion() { return p * (1 - p); }
+  double DistributionFunc(double k) {
+    if (abs(k) < EPS) {
+      return 0.;
+    } else if (abs(k-p) < EPS) {
+      return 1-p;
     } else {
-      cout << "ALERT calling for " << x << endl;
-      return -1.;
+      return 1.;
     }
   }
-  vector<double>& Values() {
-    return values;
-  }
-  double Next() {
-    return (mcg->Next() <= p ? 1 : 0);
-  }
-  ~BernoulliDistribution() {
-    delete mcg;
-  }
+
+  ~BernoulliDistribution() { delete rg; }
 
 private:
   double p;
-  vector<double> values;
-  RandomGenerator* mcg;
+  RandomGenerator* rg;
 };
 
 class BinomialDistribution : public RandomGenerator {
 public:
-  BinomialDistribution(int m, double p) : m(m), p(p), x(2) {}
-  double Next() {
-    StandartRandomGenerator rg(x);
-    x++;
-    vector<double> a(m);
-    for (int i = 0; i < m; i++) {
-      a[i] = rg.Next();
+  BinomialDistribution(int m, double p) : m(m), p(p) {
+    if (p < 0 || p > 1) {
+      throw runtime_error("Parameter p must be in [0,1] range.");
+      return;
     }
-    int x = 0;
+
     for (int i = 0; i < m; i++) {
-    //  cout << a[i] << " ";
-      x += (a[i] < p ? 1 : 0);
+      histogram.push_back(make_pair(i*1./m, (i+1)*1./m));
     }
-  //  cout << endl;
-    return x;
   }
+
+  double Next() {
+    int x = 0;
+    StandartRandomGenerator rg;
+    for (int i = 0; i < m; i++) {
+      if (rg.Next() < p) {
+        x++;
+      }
+    }
+    return x * 1. / m;
+  }
+
+  double GetExpectation() { return p; }
+  double GetDispersion() { return m * p * (1 - p); }
+  double DistributionFunc(double k) {
+    double val = 0;
+    if (abs(k) < EPS) {
+      return 0;
+    }
+    for (int i = 0; i < k * m; i++) {
+      val += c_coeff(m,i) * pow(p,i) * pow(1-p,m-i);
+    }
+    // cout << "DISTR " << k << " -> " << val << endl;
+    return val;
+  }
+
 private:
   int m;
   double p;
-  int x;
+
+  // Calculates c^n_k.
+  int c_coeff(int n, int k) {
+    if (k == 0) {
+      return 1;
+    }
+    long long ans = 1;
+    for (int i = k+1; i <= n; i++) {
+      ans *= i;
+    }
+    for (int i = 2; i <= n-k; i++) {
+      ans /= i;
+    }
+    return ans;
+  }
 };
+/*
+class GeometricDistribution : public RandomGenerator {
+public:
+  GeometricDistribution(double p) {
+    if (p < 0 || p > 1) {
+      throw runtime_error("Parameter p must be in [0,1] range.");
+      return;
+    }
+
+
+  }
+
+
+};*/
 
 #endif  // COMMON_DISCRETE_H_

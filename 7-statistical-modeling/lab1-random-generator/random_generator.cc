@@ -1,4 +1,5 @@
 #include <iostream>
+#include <time.h>
 
 #include "../common/base.cc"
 
@@ -7,6 +8,8 @@ using namespace std;
 const int INIT_VALUE = 4099;
 
 int main() {
+  srand(time(NULL));
+
   cout << "|||||||| Standart C++ Random ||||||||" << endl;
   StandartRandomGenerator().RunTests();
   cout << endl;
