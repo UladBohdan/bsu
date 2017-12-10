@@ -8,12 +8,16 @@ int main() {
   srand(time(NULL));
 
   try {
-    cout << "|||||||| Bernoulli Distribution ||||||||" << endl;
+    cout << "---------- RUN Bernoulli Distribution ----------" << endl;
     BernoulliDistribution(0.2).RunTests();
     cout << endl;
 
-    cout << "|||||||| Binomial Distribution ||||||||" << endl;
-    BinomialDistribution(5, 0.2).RunTests();
+    cout << "---------- RUN Binomial Distribution ----------" << endl;
+    BinomialDistribution(10, 0.6).RunTests();
+    cout << endl;
+
+    cout << "---------- RUN Geometric Distribution ----------" << endl;
+    GeometricDistribution(0.5).RunTests();
     cout << endl;
   }
   catch (const exception& e) {

@@ -19,7 +19,8 @@ public:
   // The distribution.
   virtual double GetExpectation() = 0;
   virtual double GetDispersion() = 0;
-  virtual double DistributionFunc(double) = 0;
+  virtual double DistributionInRange(double, double) = 0;
+  virtual void BuildHistogram() = 0;
 
   bool TestMoments() {
     int sz = x.size();
@@ -28,13 +29,13 @@ public:
       m += x[i];
     }
     m /= sz;
-    cout << "Expectation: " << m << endl;
+    cout << "Expectation: " << m << "  expected: " << GetExpectation() << endl;
     double s2 = 0;
     for (int i = 0; i < sz; i++) {
       s2 += (x[i] - m) * (x[i] - m);
     }
     s2 /= (sz - 1);
-    cout << "S2: " << s2 << endl;
+    cout << "S2: " << s2 << "  expected: " << GetDispersion() << endl;
 
     bool expTest = abs(m - GetExpectation()) < EPS;
     bool dispTest = abs(s2 - GetDispersion()) < EPS;
@@ -48,15 +49,18 @@ public:
   }
 
   bool TestPearson() {
+    BuildHistogram();
     int hsz = histogram.size();
     vector<int> v(hsz, 0);
     for (int i = 0; i < x.size(); i++) {
-      if (x[i] == 1.) {
+      if (x[i] >= histogram[hsz-1].second) {
         v[hsz-1]++;
         continue;
       }
       for (int j = 0; j < hsz; j++) {
-        if (x[i] >= histogram[j].first && x[i] < histogram[j].second) {
+        if ( (x[i] >= histogram[j].first && x[i] < histogram[j].second) ||
+              // A workaround for discrete distibutions.
+             (x[i] == histogram[j].first && x[i] == histogram[j].second) ) {
           v[j]++;
           break;
         }
@@ -71,7 +75,7 @@ public:
     double hi2 = 0;
     int sz = x.size();
     for (int i = 0; i < hsz; i++) {
-      double p = DistributionFunc(histogram[i].second) - DistributionFunc(histogram[i].first);
+      double p = DistributionInRange(histogram[i].first, histogram[i].second);
       hi2 += ((v[i] - sz * p) * (v[i] - sz * p) * 1. / (sz * p));
     }
     cout << "hi2 value: " << hi2 << endl;
@@ -119,20 +123,29 @@ protected:
   }
 };
 
-class BaseRandomGenerator : public RandomGenerator {
+class ContinuousRandomGenerator : public RandomGenerator {
 public:
-  BaseRandomGenerator() {
-    histogram = vector<pair<double,double>>(10);
-    for (int i = 0; i < 10; i++) {
-      histogram[i] = make_pair(i/10., (i+1)/10.);
-    }
-  }
+  virtual double DistributionFunc(double) = 0;
 
+  double DistributionInRange(double a, double b) {
+    return DistributionFunc(b) - DistributionFunc(a);
+  }
+};
+
+class BaseRandomGenerator : public ContinuousRandomGenerator {
+public:
   virtual double Next() = 0;
 
   double GetExpectation() { return 0.5; }
   double GetDispersion() { return 1./12; }
   double DistributionFunc(double p) { return p; }
+
+  void BuildHistogram() {
+    histogram = vector<pair<double,double>>(10);
+    for (int i = 0; i < 10; i++) {
+      histogram[i] = make_pair(i/10., (i+1)/10.);
+    }
+  }
 
   bool TestKolmogorov() {
     int sz = x.size();
@@ -160,16 +173,16 @@ public:
 class StandartRandomGenerator : public BaseRandomGenerator {
 // Remember to run srand() in your main() function.
 public:
-  StandartRandomGenerator() : BaseRandomGenerator() { }
+  StandartRandomGenerator() { }
   double Next() {
-    return (rand() % (M+1)) / (M * 1.);
+    return (rand() % M) / (M * 1.);
   }
 };
 
 class MultiplicativeCongruentialGenerator : public BaseRandomGenerator {
 public:
   MultiplicativeCongruentialGenerator(int x0, int a, int M) :
-    BaseRandomGenerator(), a(a), M(M), cur(x0) { }
+    a(a), M(M), cur(x0) { }
   double Next() {
     cur = (a * cur) % M;
     return cur * 1. / M;
@@ -181,7 +194,7 @@ private:
 
 class MacLarenMarsagliaGenerator : public BaseRandomGenerator {
 public:
-  MacLarenMarsagliaGenerator(int k) : BaseRandomGenerator(), k(k), pos(0) {
+  MacLarenMarsagliaGenerator(int k) : k(k), pos(0) {
     xx = vector<double>(k);
     y = vector<double>(k);
     v = vector<double>(k);
