@@ -110,7 +110,7 @@ void runGauss(int proc_rank) {
 
       time_start = clock();
       if (proc_rank != Q2-1) {
-        MPI_Send(u, N+1, MPI_DOUBLE, 1, 123, MPI_COMM_WORLD);
+        MPI_Send(u, N+1, MPI_DOUBLE, proc_rank + 1, 123, MPI_COMM_WORLD);
       }
       updateTimeComm();
 
@@ -191,20 +191,15 @@ int main(int argc, char** argv) {
   }
 
   //  Q1 = (N - 1) / R1 + ((N-1)%R1 == 0 ? 0 : 1);
-  // ?
-  R2 = (N - 1) / Q2 + ((N-1)%Q2 == 0 ? 0 : 1);
   R2 = N / Q2;
   //  Q3 = N / R3 + (N%R3 == 0 ? 0 : 1);
 
-  // printf("R2 %d  Q2  %d\n", R2, Q2);
 
   underSubmatrix = malloc(R2 * (N+1) * sizeof(double));
   submatrix = malloc(R2 * sizeof(double*));
   for (int i = 0; i < R2; i++) {
     submatrix[i] = underSubmatrix + i * (N+1);
   }
-
-  // printf("[%d] what's wrong?\n", proc_rank);
 
   if (proc_rank == ROOT) {
     generateMatrix();
@@ -222,11 +217,9 @@ int main(int argc, char** argv) {
       }
     }
   } else {
-    // printf("[%d] receiving submatrix... \n", proc_rank);
     time_start = clock();
     MPI_Recv(underSubmatrix, R2 * (N+1), MPI_DOUBLE, ROOT, 345, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
     updateTimeComm();
-    // printf("[%d] submatrix received.\n", proc_rank);
   }
 
   MPI_Barrier(MPI_COMM_WORLD);
@@ -265,10 +258,6 @@ int main(int argc, char** argv) {
     if (N <= 15) {
       printf("======\nTHE SOLUTION\n");
       for (int i = 0; i < N; i++) {
-        /*for (int j = 0; j < N; j++) {
-          printf("%f ", B[i][j]);
-        }
-        printf("| %f\n", B[i][N]);*/
         printf("%f ", B[i][N]);
       }
       printf("\n=======\n");
