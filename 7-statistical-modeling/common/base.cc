@@ -1,6 +1,7 @@
 #ifndef COMMON_BASE_CPP_
 #define COMMON_BASE_CPP_
 
+#include <algorithm>
 #include <cmath>
 #include <iomanip>
 #include <stdlib.h>
@@ -88,10 +89,6 @@ public:
     string name = "Moments test";
     PrintIntro(name);
     PrintTestResult(name, TestMoments());
-
-    name = "Pearson test";
-    PrintIntro(name);
-    PrintTestResult(name, TestPearson());
   }
 
   virtual ~RandomGenerator() {}
@@ -130,6 +127,28 @@ public:
   double DistributionInRange(double a, double b) {
     return DistributionFunc(b) - DistributionFunc(a);
   }
+
+  virtual bool TestKolmogorov() {
+    vector<double> v(x.begin(), x.end());
+    sort(v.begin(), v.end());
+    double s = 0;
+    int sz = v.size();
+    for (int i = 0; i < sz; i++) {
+      s = max(s, DistributionFunc(v[i]) - (2. * i + 1) / (2 * sz));
+    }
+    s *= sqrt(sz);
+    cout << "Kolmogorov value: " << s << endl;
+    return s < KOLMOGOROV_THRESHOLD;
+  }
+
+  void RunTests(int sz = DEFAULT_TEST_SIZE) {
+    RandomGenerator::RunTests(sz);
+
+    // Base Random Generator specific tests.
+    string name = "Kolmogorov test";
+    PrintIntro(name);
+    PrintTestResult(name, TestKolmogorov());
+  }
 };
 
 class BaseRandomGenerator : public ContinuousRandomGenerator {
@@ -147,6 +166,7 @@ public:
     }
   }
 
+  // ContinuousRandomGenerator::TestKolmogorov must return identical results.
   bool TestKolmogorov() {
     int sz = x.size();
     double mx = 0;
@@ -161,12 +181,11 @@ public:
   }
 
   void RunTests(int sz = DEFAULT_TEST_SIZE) {
-    RandomGenerator::RunTests(sz);
+    ContinuousRandomGenerator::RunTests(sz);
 
-    // Base Random Generator specific tests.
-    string name = "Kolmogorov test";
+    string name = "Pearson test";
     PrintIntro(name);
-    PrintTestResult(name, TestKolmogorov());
+    PrintTestResult(name, TestPearson());
   }
 };
 

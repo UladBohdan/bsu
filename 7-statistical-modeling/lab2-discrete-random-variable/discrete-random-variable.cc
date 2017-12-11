@@ -13,7 +13,7 @@ int main() {
     cout << endl;
 
     cout << "---------- RUN Binomial Distribution ----------" << endl;
-    BinomialDistribution(10, 0.6).RunTests();
+    BinomialDistribution(10, 0.5).RunTests(1000);
     cout << endl;
 
     cout << "---------- RUN Geometric Distribution ----------" << endl;

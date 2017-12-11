@@ -21,11 +21,11 @@ int main() {
     cout << endl;
 
     cout << "---------- RUN Laplace Distribution ----------" << endl;
-    LaplaceDistribution(0.5).RunTests(30000);
+    LaplaceDistribution(0.5).RunTests();
     cout << endl;
 
     cout << "---------- RUN Logistic Distribution ----------" << endl;
-    LogisticDistribution(5, 2).RunTests(30000);
+    LogisticDistribution(5, 2).RunTests();
     cout << endl;
 
   } catch (const exception& e) {
