@@ -21,6 +21,7 @@ int main() {
     cout << endl;
 
     cout << "---------- RUN Laplace Distribution ----------" << endl;
+    // Dual Exponential.
     LaplaceDistribution(0.5).RunTests();
     cout << endl;
 

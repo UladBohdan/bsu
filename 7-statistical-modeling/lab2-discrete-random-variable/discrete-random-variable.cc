@@ -13,11 +13,19 @@ int main() {
     cout << endl;
 
     cout << "---------- RUN Binomial Distribution ----------" << endl;
-    BinomialDistribution(10, 0.5).RunTests(1000);
+    BinomialDistribution(10, 0.5).RunTests();
     cout << endl;
 
     cout << "---------- RUN Geometric Distribution ----------" << endl;
     GeometricDistribution(0.5).RunTests();
+    cout << endl;
+
+    cout << "---------- RUN Uniform Discrete Distribution ----------" << endl;
+    UniformDiscreteDistribution(1, 8).RunTests();
+    cout << endl;
+
+    cout << "---------- RUN Poisson Distribution ----------" << endl;
+    PoissonDistribution(4).RunTests();
     cout << endl;
   }
   catch (const exception& e) {

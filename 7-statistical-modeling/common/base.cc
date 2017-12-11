@@ -1,5 +1,5 @@
-#ifndef COMMON_BASE_CPP_
-#define COMMON_BASE_CPP_
+#ifndef COMMON_BASE_CC_
+#define COMMON_BASE_CC_
 
 #include <algorithm>
 #include <cmath>
@@ -15,6 +15,8 @@ using namespace std;
 // The very common interface for any random generator (basic, discrete, continuous).
 class RandomGenerator {
 public:
+  RandomGenerator(double xi = DEFAULT_PEARSON_THRESHOLD) : xi_pearson(xi) { }
+
   virtual double Next() = 0;
 
   // The distribution.
@@ -79,8 +81,8 @@ public:
       double p = DistributionInRange(histogram[i].first, histogram[i].second);
       hi2 += ((v[i] - sz * p) * (v[i] - sz * p) * 1. / (sz * p));
     }
-    cout << "hi2 value: " << hi2 << endl;
-    return hi2 < PEARSON_THRESHOLD;
+    cout << "hi2 value: " << hi2 << "  hi2 threshold: " << xi_pearson << endl;
+    return hi2 < xi_pearson;
   }
 
   void RunTests(double sz = DEFAULT_TEST_SIZE) {
@@ -98,6 +100,9 @@ protected:
   // Set of pairs [a, b) defining the histogram. Must be initialized before
   // running TestPearson.
   vector<pair<double,double>> histogram;
+
+  // To overwrite Person Threshold in Discrete Distributions.
+  double xi_pearson;
 
   // UTILS. ////////////////////////////////
   void GenerateValues(int sz) {
@@ -194,7 +199,7 @@ class StandartRandomGenerator : public BaseRandomGenerator {
 public:
   StandartRandomGenerator() { }
   double Next() {
-    return (rand() % M) / (M * 1.);
+    return rand() * 1. / RAND_MAX;
   }
 };
 
@@ -243,4 +248,4 @@ private:
   int pos;
 };
 
-#endif  // COMMON_BASE_CPP_
+#endif  // COMMON_BASE_CC_
