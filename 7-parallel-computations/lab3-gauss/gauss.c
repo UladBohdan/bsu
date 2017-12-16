@@ -11,7 +11,11 @@ const char* COLOUR_RED = "\033[1;31m";
 const char* COLOUR_DEFAULT = "\033[0m";
 const double EPS = 0.01;
 
-int N, R2, Q2;
+int N;
+// if N % Q2 == 0 then R2 == R2_last == R2_global.
+// if N % Q2 != 0 then R2 == R2_last for the process Q2 - 1,
+//   R2 == R2_global otherwise.
+int R2, Q2, R2_last, R2_global;
 
 double** A;
 double** submatrix;
@@ -88,9 +92,13 @@ void checkCorrectness() {
 
 void runGauss(int proc_rank) {
 
+  // printf("proc %d  R2 = %d\n", proc_rank, R2);
+
   for (int k = 0; k < N; k++) {
 
-    if (proc_rank == k / R2) {
+    if (proc_rank == k / R2_global) {
+
+      // printf("proc %d  behaves as ROOT\n", proc_rank);
 
       time_start = clock();
       double* u = (double*) malloc((N+1) * sizeof(double));
@@ -98,7 +106,7 @@ void runGauss(int proc_rank) {
         u[i] = 0.;
       }
 
-      int row = k % R2;
+      int row = k % R2_global;
 
       for (int j = k + 1; j < N+1; j++) {
         u[j] = submatrix[row][j] / submatrix[row][k];
@@ -107,6 +115,10 @@ void runGauss(int proc_rank) {
       u[k] = 1.;
       submatrix[row][k] = 1.;
       updateTimeCalc();
+
+      // printf("U to send: ");
+      // for (int i = 0; i < N+1; i++) printf("%f ", u[i]);
+      // printf("\n");
 
       time_start = clock();
       if (proc_rank != Q2-1) {
@@ -125,7 +137,11 @@ void runGauss(int proc_rank) {
       updateTimeCalc();
 
       free(u);
-    } else if (proc_rank > k / R2) {
+
+    } else if (proc_rank > k / R2_global) {
+
+      // printf("proc %d  is to accept U\n", proc_rank);
+
       double* u = (double*) malloc((N+1) * sizeof(double));
       time_start = clock();
       MPI_Recv(u, N+1, MPI_DOUBLE, proc_rank-1, 123, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
@@ -146,6 +162,14 @@ void runGauss(int proc_rank) {
         submatrix[i][k] = 0.;
       }
       updateTimeCalc();
+
+      // printf("U applied in non-ROOT process:\n");
+      // for (int i = 0; i < R2; i++) {
+      //   for (int j = 0; j < N+1; j++) {
+      //     printf("%f ", submatrix[i][j]);
+      //   }
+      //   printf("\n");
+      // }
     }
     MPI_Barrier(MPI_COMM_WORLD);
   }
@@ -183,15 +207,13 @@ int main(int argc, char** argv) {
 
   sscanf(argv[1], "%d", &N);
 
-  if (N % Q2 != 0) {
-    if (proc_rank == ROOT) {
-      printf("Sorry, not supported. Consider changing matrix size / number of processes.\n");
-    }
-    return 0;
-  }
-
   //  Q1 = (N - 1) / R1 + ((N-1)%R1 == 0 ? 0 : 1);
-  R2 = N / Q2;
+  R2 = ceil( N * 1. / Q2 );
+  R2_global = R2;
+  R2_last = N - R2 * (Q2 - 1);  // the rest of rows go to the last process.
+  if (proc_rank == Q2 - 1) {
+    R2 = R2_last;
+  }
   //  Q3 = N / R3 + (N%R3 == 0 ? 0 : 1);
 
 
@@ -203,12 +225,15 @@ int main(int argc, char** argv) {
 
   if (proc_rank == ROOT) {
     generateMatrix();
-    //printMatrix(A, N);
+    // printMatrix(A, N);
     printf("Matrix is generated.\n");
 
     time_start = clock();
-    for (int proc = 1; proc < Q2; proc++) {
+    for (int proc = 1; proc < Q2-1; proc++) {
       MPI_Send(A[R2*proc], R2 * (N+1), MPI_DOUBLE, proc, 345, MPI_COMM_WORLD);
+    }
+    if (Q2 > 1) {
+      MPI_Send(A[R2*(Q2-1)], R2_last * (N+1), MPI_DOUBLE, Q2-1, 345, MPI_COMM_WORLD);
     }
     updateTimeComm();
     for (int i = 0; i < R2; i++) {
@@ -231,8 +256,11 @@ int main(int argc, char** argv) {
   if (proc_rank == ROOT) {
     alloc_B();
     time_start = clock();
-    for (int proc = 1; proc < Q2; proc++) {
+    for (int proc = 1; proc < Q2-1; proc++) {
       MPI_Recv(B[R2*proc], R2 * (N+1), MPI_DOUBLE, proc, 109, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+    }
+    if (Q2 > 1) {
+      MPI_Recv(B[R2*(Q2-1)], R2_last * (N+1), MPI_DOUBLE, Q2-1, 109, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
     }
     updateTimeComm();
     for (int i = 0; i < R2; i++) {
@@ -240,6 +268,8 @@ int main(int argc, char** argv) {
         B[i][j] = submatrix[i][j];
       }
     }
+    // printf("Matrix B:\n");
+    // printMatrix(B, N);
   } else {
     time_start = clock();
     MPI_Send(underSubmatrix, R2 * (N+1), MPI_DOUBLE, ROOT, 109, MPI_COMM_WORLD);
