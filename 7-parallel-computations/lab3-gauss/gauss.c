@@ -12,10 +12,13 @@ const char* COLOUR_DEFAULT = "\033[0m";
 const double EPS = 0.01;
 
 int N;
+// Q2 equals to number of processes.
 // if N % Q2 == 0 then R2 == R2_last == R2_global.
 // if N % Q2 != 0 then R2 == R2_last for the process Q2 - 1,
 //   R2 == R2_global otherwise.
 int R2, Q2, R2_last, R2_global;
+// R3 is set explicitly. Q3 is a result of calculations.
+int R3, Q3, R3_last, R3_global;
 
 double** A;
 double** submatrix;
@@ -32,10 +35,6 @@ double time_calculations = 0;
 void updateTimeCalc() { time_calculations += (double)(clock() - time_start); }
 double time_indirect_gauss = 0;
 
-// Initialized.
-//int R1 = 5, Q2, R3 = 5;
-// Calculated.
-//int Q1, R2, Q3;
 
 void generateMatrix() {
   // Allocating contiguous memory.
@@ -101,17 +100,33 @@ void runGauss(int proc_rank) {
       // printf("proc %d  behaves as ROOT\n", proc_rank);
 
       time_start = clock();
+      // U is actually splitted into Q3 parts. Is it?
       double* u = (double*) malloc((N+1) * sizeof(double));
-      for (int i = 0; i < N+1; i++) {
-        u[i] = 0.;
+      // for (int j = 0; j < N+1; j++) u[j] = 0.;
+      for (int j_gl = 0; j_gl < Q3; j_gl++) {
+        for (int j = j_gl * R3_global; j < j_gl * R3_global + (j_gl == Q3-1 ? R3_last : R3); j++) {
+          u[j] = 0.;
+        }
       }
+
+      // printf("U init: ");
+      // for (int i = 0; i < N+1; i++) printf("%f ", u[i]);
+      // printf("\n");
 
       int row = k % R2_global;
 
-      for (int j = k + 1; j < N+1; j++) {
-        u[j] = submatrix[row][j] / submatrix[row][k];
-        submatrix[row][j] /= submatrix[row][k];
+      for (int j_gl = 0; j_gl < Q3; j_gl++) {
+        for (int j = j_gl * R3_global; j < j_gl * R3_global + (j_gl == Q3-1 ? R3_last : R3); j++) {
+          if (j < k+1) continue;
+          u[j] = submatrix[row][j] / submatrix[row][k];
+          submatrix[row][j] /= submatrix[row][k];
+        }
       }
+
+      // for (int j = k + 1; j < N+1; j++) {
+      //   u[j] = submatrix[row][j] / submatrix[row][k];
+      //   submatrix[row][j] /= submatrix[row][k];
+      // }
       u[k] = 1.;
       submatrix[row][k] = 1.;
       updateTimeCalc();
@@ -129,9 +144,15 @@ void runGauss(int proc_rank) {
       // Applying u row for submatrix.
       time_start = clock();
       for (int i = row+1; i < R2; i++) {
-        for (int j = k + 1; j < N+1; j++) {
-          submatrix[i][j] -= submatrix[i][k] * u[j];
+        for (int j_gl = 0; j_gl < Q3; j_gl++) {
+          for (int j = j_gl * R3_global; j < j_gl * R3_global + (j_gl == Q3-1 ? R3_last : R3); j++) {
+            if (j < k+1) continue;
+            submatrix[i][j] -= submatrix[i][k] * u[j];
+          }
         }
+        // for (int j = k + 1; j < N+1; j++) {
+        //   submatrix[i][j] -= submatrix[i][k] * u[j];
+        // }
         submatrix[i][k] = 0.;
       }
       updateTimeCalc();
@@ -156,7 +177,7 @@ void runGauss(int proc_rank) {
       // Applying u row for submatrix.
       time_start = clock();
       for (int i = 0; i < R2; i++) {
-        for (int j = k + 1; j < N + 1; j++) {
+        for (int j = k+1; j < N + 1; j++) {
           submatrix[i][j] -= submatrix[i][k] * u[j];
         }
         submatrix[i][k] = 0.;
@@ -191,11 +212,12 @@ int main(int argc, char** argv) {
   int proc_rank;
   MPI_Comm_rank(MPI_COMM_WORLD, &proc_rank);
 
-  if (proc_rank == ROOT) {
-    if (argc != 2) {
-      printf("Required number of arguments: 1\n");
-      return 0;
+
+  if (argc != 3) {
+    if (proc_rank == ROOT) {
+      printf("Required number of arguments: 2\n");
     }
+    return 0;
   }
 
   clock_t begin_time_total;
@@ -216,6 +238,16 @@ int main(int argc, char** argv) {
   }
   //  Q3 = N / R3 + (N%R3 == 0 ? 0 : 1);
 
+  sscanf(argv[2], "%d", &R3_global);
+  Q3 = ceil( N * 1. / R3_global );
+  R3 = R3_global;
+  R3_last = N + 1 - R3 * (Q3 - 1);
+/*  if (proc_rank == Q2 - 1) {
+    R3 = R3_last;
+  } */
+
+  printf("proc %d | R3 %d  Q3  %d  R3_global %d  R3_last %d\n", proc_rank, R3, Q3, R3_global, R3_last);
+  // return 0;
 
   underSubmatrix = malloc(R2 * (N+1) * sizeof(double));
   submatrix = malloc(R2 * sizeof(double*));

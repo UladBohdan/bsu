@@ -1,6 +1,6 @@
 #!/bin/bash
 
-MATRIX_SIZE=2100
+MATRIX_SIZE=2000
 
 printf "Gauss method to solve system of linear equations.\n"
 printf "Matrix size is %s\n" $MATRIX_SIZE
