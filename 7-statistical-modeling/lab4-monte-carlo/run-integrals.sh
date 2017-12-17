@@ -1,2 +1,2 @@
-g++ --std=c++11 monte-carlo.cc || exit 1
+g++ --std=c++11 integrals.cc || exit 1
 ./a.out
