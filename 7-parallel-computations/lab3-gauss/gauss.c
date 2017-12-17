@@ -98,6 +98,8 @@ void runGauss(int proc_rank) {
   for (int k_gl = 0; k_gl < Q1; k_gl++) {
     for (int k = k_gl * R1; k < k_gl * R1 + R1 && k < N; k++) {
 
+      int row = k % R2_global;
+
       if (proc_rank == k / R2_global) {
 
         // printf("proc %d  behaves as ROOT\n", proc_rank);
@@ -115,8 +117,6 @@ void runGauss(int proc_rank) {
         // printf("U init: ");
         // for (int i = 0; i < N+1; i++) printf("%f ", u[i]);
         // printf("\n");
-
-        int row = k % R2_global;
 
         for (int j_gl = 0; j_gl < Q3; j_gl++) {
           for (int j = j_gl * R3; j < j_gl * R3 + R3 && j < N+1; j++) {
@@ -146,8 +146,9 @@ void runGauss(int proc_rank) {
 
         // Applying u row for submatrix.
         time_start = clock();
-        for (int i = row+1; i < R2; i++) {
-          for (int j_gl = 0; j_gl < Q3; j_gl++) {
+
+        for (int j_gl = 0; j_gl < Q3; j_gl++) {
+          for (int i = row+1; i < R2; i++) {
             for (int j = j_gl * R3; j < j_gl * R3 + R3 && j < N+1; j++) {
               if (j < k+1) continue;
               submatrix[i][j] -= submatrix[i][k] * u[j];
@@ -156,8 +157,12 @@ void runGauss(int proc_rank) {
           // for (int j = k + 1; j < N+1; j++) {
           //   submatrix[i][j] -= submatrix[i][k] * u[j];
           // }
+        }
+
+        for (int i = row+1; i < R2; i++) {
           submatrix[i][k] = 0.;
         }
+
         updateTimeCalc();
 
         free(u);
@@ -179,10 +184,16 @@ void runGauss(int proc_rank) {
 
         // Applying u row for submatrix.
         time_start = clock();
-        for (int i = 0; i < R2; i++) {
-          for (int j = k+1; j < N + 1; j++) {
-            submatrix[i][j] -= submatrix[i][k] * u[j];
+        for (int j_gl = 0; j_gl < Q3; j_gl++) {
+          for (int i = 0; i < R2; i++) {
+            for (int j = j_gl * R3; j < j_gl * R3 + R3 && j < N + 1; j++) {
+              if (j < k+1) continue;
+              submatrix[i][j] -= submatrix[i][k] * u[j];
+            }
           }
+        }
+
+        for (int i = 0; i < R2; i++) {
           submatrix[i][k] = 0.;
         }
         updateTimeCalc();
@@ -336,7 +347,7 @@ int main(int argc, char** argv) {
   MPI_Barrier(MPI_COMM_WORLD);
 
   printf("[%d] total COMMUNICATION time:  %fs\n", proc_rank, time_communications / CLOCKS_PER_SEC);
-  printf("[%d] total CALCULATIONS time:   %fs\n", proc_rank, time_calculations / CLOCKS_PER_SEC);
+  printf("[%d] total CALCULATION time:   %fs\n", proc_rank, time_calculations / CLOCKS_PER_SEC);
 
   if (proc_rank) {
     free(underA);
