@@ -12,13 +12,15 @@ const char* COLOUR_DEFAULT = "\033[0m";
 const double EPS = 0.01;
 
 int N;
+// R1 is set explicitly. Q1 is a result of calculations.
+int R1, Q1;
 // Q2 equals to number of processes.
 // if N % Q2 == 0 then R2 == R2_last == R2_global.
 // if N % Q2 != 0 then R2 == R2_last for the process Q2 - 1,
 //   R2 == R2_global otherwise.
 int R2, Q2, R2_last, R2_global;
 // R3 is set explicitly. Q3 is a result of calculations.
-int R3, Q3, R3_last, R3_global;
+int R3, Q3;
 
 double** A;
 double** submatrix;
@@ -93,106 +95,108 @@ void runGauss(int proc_rank) {
 
   // printf("proc %d  R2 = %d\n", proc_rank, R2);
 
-  for (int k = 0; k < N; k++) {
+  for (int k_gl = 0; k_gl < Q1; k_gl++) {
+    for (int k = k_gl * R1; k < k_gl * R1 + R1 && k < N; k++) {
 
-    if (proc_rank == k / R2_global) {
+      if (proc_rank == k / R2_global) {
 
-      // printf("proc %d  behaves as ROOT\n", proc_rank);
+        // printf("proc %d  behaves as ROOT\n", proc_rank);
 
-      time_start = clock();
-      // U is actually splitted into Q3 parts. Is it?
-      double* u = (double*) malloc((N+1) * sizeof(double));
-      // for (int j = 0; j < N+1; j++) u[j] = 0.;
-      for (int j_gl = 0; j_gl < Q3; j_gl++) {
-        for (int j = j_gl * R3_global; j < j_gl * R3_global + (j_gl == Q3-1 ? R3_last : R3); j++) {
-          u[j] = 0.;
-        }
-      }
-
-      // printf("U init: ");
-      // for (int i = 0; i < N+1; i++) printf("%f ", u[i]);
-      // printf("\n");
-
-      int row = k % R2_global;
-
-      for (int j_gl = 0; j_gl < Q3; j_gl++) {
-        for (int j = j_gl * R3_global; j < j_gl * R3_global + (j_gl == Q3-1 ? R3_last : R3); j++) {
-          if (j < k+1) continue;
-          u[j] = submatrix[row][j] / submatrix[row][k];
-          submatrix[row][j] /= submatrix[row][k];
-        }
-      }
-
-      // for (int j = k + 1; j < N+1; j++) {
-      //   u[j] = submatrix[row][j] / submatrix[row][k];
-      //   submatrix[row][j] /= submatrix[row][k];
-      // }
-      u[k] = 1.;
-      submatrix[row][k] = 1.;
-      updateTimeCalc();
-
-      // printf("U to send: ");
-      // for (int i = 0; i < N+1; i++) printf("%f ", u[i]);
-      // printf("\n");
-
-      time_start = clock();
-      if (proc_rank != Q2-1) {
-        MPI_Send(u, N+1, MPI_DOUBLE, proc_rank + 1, 123, MPI_COMM_WORLD);
-      }
-      updateTimeComm();
-
-      // Applying u row for submatrix.
-      time_start = clock();
-      for (int i = row+1; i < R2; i++) {
+        time_start = clock();
+        // U is actually splitted into Q3 parts. Is it?
+        double* u = (double*) malloc((N+1) * sizeof(double));
+        // for (int j = 0; j < N+1; j++) u[j] = 0.;
         for (int j_gl = 0; j_gl < Q3; j_gl++) {
-          for (int j = j_gl * R3_global; j < j_gl * R3_global + (j_gl == Q3-1 ? R3_last : R3); j++) {
-            if (j < k+1) continue;
-            submatrix[i][j] -= submatrix[i][k] * u[j];
+          for (int j = j_gl * R3; j < j_gl * R3 + R3 && j < N+1; j++) {
+            u[j] = 0.;
           }
         }
-        // for (int j = k + 1; j < N+1; j++) {
-        //   submatrix[i][j] -= submatrix[i][k] * u[j];
-        // }
-        submatrix[i][k] = 0.;
-      }
-      updateTimeCalc();
 
-      free(u);
+        // printf("U init: ");
+        // for (int i = 0; i < N+1; i++) printf("%f ", u[i]);
+        // printf("\n");
 
-    } else if (proc_rank > k / R2_global) {
+        int row = k % R2_global;
 
-      // printf("proc %d  is to accept U\n", proc_rank);
-
-      double* u = (double*) malloc((N+1) * sizeof(double));
-      time_start = clock();
-      MPI_Recv(u, N+1, MPI_DOUBLE, proc_rank-1, 123, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-
-      // Sending to the next process first.
-      if (proc_rank < Q2-1) {
-        // Translating the row further.
-        MPI_Send(u, N+1, MPI_DOUBLE, proc_rank + 1, 123, MPI_COMM_WORLD);
-      }
-      updateTimeComm();
-
-      // Applying u row for submatrix.
-      time_start = clock();
-      for (int i = 0; i < R2; i++) {
-        for (int j = k+1; j < N + 1; j++) {
-          submatrix[i][j] -= submatrix[i][k] * u[j];
+        for (int j_gl = 0; j_gl < Q3; j_gl++) {
+          for (int j = j_gl * R3; j < j_gl * R3 + R3 && j < N+1; j++) {
+            if (j < k+1) continue;
+            u[j] = submatrix[row][j] / submatrix[row][k];
+            submatrix[row][j] /= submatrix[row][k];
+          }
         }
-        submatrix[i][k] = 0.;
-      }
-      updateTimeCalc();
 
-      // printf("U applied in non-ROOT process:\n");
-      // for (int i = 0; i < R2; i++) {
-      //   for (int j = 0; j < N+1; j++) {
-      //     printf("%f ", submatrix[i][j]);
-      //   }
-      //   printf("\n");
-      // }
+        // for (int j = k + 1; j < N+1; j++) {
+        //   u[j] = submatrix[row][j] / submatrix[row][k];
+        //   submatrix[row][j] /= submatrix[row][k];
+        // }
+        u[k] = 1.;
+        submatrix[row][k] = 1.;
+        updateTimeCalc();
+
+        // printf("U to send: ");
+        // for (int i = 0; i < N+1; i++) printf("%f ", u[i]);
+        // printf("\n");
+
+        time_start = clock();
+        if (proc_rank != Q2-1) {
+          MPI_Send(u, N+1, MPI_DOUBLE, proc_rank + 1, 123, MPI_COMM_WORLD);
+        }
+        updateTimeComm();
+
+        // Applying u row for submatrix.
+        time_start = clock();
+        for (int i = row+1; i < R2; i++) {
+          for (int j_gl = 0; j_gl < Q3; j_gl++) {
+            for (int j = j_gl * R3; j < j_gl * R3 + R3 && j < N+1; j++) {
+              if (j < k+1) continue;
+              submatrix[i][j] -= submatrix[i][k] * u[j];
+            }
+          }
+          // for (int j = k + 1; j < N+1; j++) {
+          //   submatrix[i][j] -= submatrix[i][k] * u[j];
+          // }
+          submatrix[i][k] = 0.;
+        }
+        updateTimeCalc();
+
+        free(u);
+
+      } else if (proc_rank > k / R2_global) {
+
+        // printf("proc %d  is to accept U\n", proc_rank);
+
+        double* u = (double*) malloc((N+1) * sizeof(double));
+        time_start = clock();
+        MPI_Recv(u, N+1, MPI_DOUBLE, proc_rank-1, 123, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+
+        // Sending to the next process first.
+        if (proc_rank < Q2-1) {
+          // Translating the row further.
+          MPI_Send(u, N+1, MPI_DOUBLE, proc_rank + 1, 123, MPI_COMM_WORLD);
+        }
+        updateTimeComm();
+
+        // Applying u row for submatrix.
+        time_start = clock();
+        for (int i = 0; i < R2; i++) {
+          for (int j = k+1; j < N + 1; j++) {
+            submatrix[i][j] -= submatrix[i][k] * u[j];
+          }
+          submatrix[i][k] = 0.;
+        }
+        updateTimeCalc();
+
+        // printf("U applied in non-ROOT process:\n");
+        // for (int i = 0; i < R2; i++) {
+        //   for (int j = 0; j < N+1; j++) {
+        //     printf("%f ", submatrix[i][j]);
+        //   }
+        //   printf("\n");
+        // }
+      }
+      MPI_Barrier(MPI_COMM_WORLD);
     }
-    MPI_Barrier(MPI_COMM_WORLD);
   }
 }
 
@@ -212,10 +216,9 @@ int main(int argc, char** argv) {
   int proc_rank;
   MPI_Comm_rank(MPI_COMM_WORLD, &proc_rank);
 
-
-  if (argc != 3) {
+  if (argc != 4) {
     if (proc_rank == ROOT) {
-      printf("Required number of arguments: 2\n");
+      printf("Required number of arguments: 3\n");
     }
     return 0;
   }
@@ -229,25 +232,26 @@ int main(int argc, char** argv) {
 
   sscanf(argv[1], "%d", &N);
 
-  //  Q1 = (N - 1) / R1 + ((N-1)%R1 == 0 ? 0 : 1);
+  sscanf(argv[2], "%d", &R1);
+  Q1 = ceil( N * 1. / R1 );
+
   R2 = ceil( N * 1. / Q2 );
   R2_global = R2;
   R2_last = N - R2 * (Q2 - 1);  // the rest of rows go to the last process.
   if (proc_rank == Q2 - 1) {
     R2 = R2_last;
   }
-  //  Q3 = N / R3 + (N%R3 == 0 ? 0 : 1);
 
-  sscanf(argv[2], "%d", &R3_global);
-  Q3 = ceil( N * 1. / R3_global );
-  R3 = R3_global;
-  R3_last = N + 1 - R3 * (Q3 - 1);
-/*  if (proc_rank == Q2 - 1) {
-    R3 = R3_last;
-  } */
+  sscanf(argv[3], "%d", &R3);
+  Q3 = ceil( (N+1) * 1. / R3 );
 
-  printf("proc %d | R3 %d  Q3  %d  R3_global %d  R3_last %d\n", proc_rank, R3, Q3, R3_global, R3_last);
-  // return 0;
+  if (proc_rank == ROOT) {
+    printf(
+      "running with parameters:\n"
+      "Q1: %d  R1: %d\n"
+      "Q2: %d  R2: %d  R2_last: %d\n"
+      "Q3: %d  R3: %d\n", Q1, R1, Q2, R2, R2_last, Q3, R3);
+  }
 
   underSubmatrix = malloc(R2 * (N+1) * sizeof(double));
   submatrix = malloc(R2 * sizeof(double*));
