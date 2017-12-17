@@ -9,7 +9,7 @@
 const char* COLOUR_GREEN = "\033[1;32m";
 const char* COLOUR_RED = "\033[1;31m";
 const char* COLOUR_DEFAULT = "\033[0m";
-const double EPS = 0.01;
+const double EPS = 0.000001;
 
 int N;
 // R1 is set explicitly. Q1 is a result of calculations.
@@ -28,6 +28,10 @@ double** B; // to collect data back.
 double* underA;
 double* underB;
 double* underSubmatrix;
+
+// Printing a tile. Should be set manually (no command is provided).
+int print_tile = 0;
+int k_gl_tile = 0, i_gl_tile = 0, j_gl_tile = 2; // i stands for proc number.
 
 // Metrics.
 clock_t time_start;
@@ -93,120 +97,131 @@ void checkCorrectness() {
 
 void runGauss(int proc_rank) {
 
-  // printf("proc %d  R2 = %d\n", proc_rank, R2);
-
   for (int k_gl = 0; k_gl < Q1; k_gl++) {
     for (int k = k_gl * R1; k < k_gl * R1 + R1 && k < N; k++) {
 
       int row = k % R2_global;
+      double div_on;
 
-      if (proc_rank == k / R2_global) {
+      // div_on must be set ONCE for all j_gl.
+      // I am doing that for master process only as it may cause segmentation
+      // fault failures on submatrix[row][k] extractions.
+      if (proc_rank == k / R2_global) div_on = submatrix[row][k];
 
-        // printf("proc %d  behaves as ROOT\n", proc_rank);
+      for (int j_gl = 0; j_gl < Q3; j_gl++) {
 
-        time_start = clock();
-        // U is actually splitted into Q3 parts. Is it?
-        double* u = (double*) malloc((N+1) * sizeof(double));
-        // for (int j = 0; j < N+1; j++) u[j] = 0.;
-        for (int j_gl = 0; j_gl < Q3; j_gl++) {
-          for (int j = j_gl * R3; j < j_gl * R3 + R3 && j < N+1; j++) {
-            u[j] = 0.;
+        int width = (j_gl == Q3-1 ? N+1-R3*(Q3-1) : R3);
+        int offset = j_gl * R3; // for U vector.
+
+        if (print_tile) {
+          // Printing requested.
+          if (k_gl == k_gl_tile && i_gl_tile == proc_rank && j_gl_tile == j_gl) {
+            // Currently in the tile.
+            if (k == k_gl * R1) {
+              printf("TILE. K (iteration) = %d, I (height, process) = %d, J (width) = %d :\n", k_gl, proc_rank, j_gl);
+            }
+            printf("--- layer k = %d\n", k);
+            for (int i = 0; i < R2; i++) {
+              for (int j = j_gl * R3; j < j_gl * R3 + R3 && j < N+1; j++) {
+                printf("%f ", submatrix[i][j]);
+              }
+              printf("\n");
+            }
+            if (k == k_gl * R1 + R1 - 1 || k == N - 1) {
+              printf("-------------- end of tile --------------\n");
+            }
           }
         }
 
-        // printf("U init: ");
-        // for (int i = 0; i < N+1; i++) printf("%f ", u[i]);
-        // printf("\n");
+        double* u = (double*) calloc(width, sizeof(double));
 
-        for (int j_gl = 0; j_gl < Q3; j_gl++) {
+        if (proc_rank == k / R2_global) {
+
+          // printf("proc %d  k %d  j_gl %d as master\n", proc_rank, k, j_gl);
+
+          time_start = clock();
+
+          // printf("U init: ");
+          // for (int i = 0; i < width; i++) printf("%f ", u[i]);
+          // printf("\n");
+
           for (int j = j_gl * R3; j < j_gl * R3 + R3 && j < N+1; j++) {
             if (j < k+1) continue;
-            u[j] = submatrix[row][j] / submatrix[row][k];
-            submatrix[row][j] /= submatrix[row][k];
+            u[j-offset] = submatrix[row][j] / div_on;
+            submatrix[row][j] /= div_on;
           }
-        }
 
-        // for (int j = k + 1; j < N+1; j++) {
-        //   u[j] = submatrix[row][j] / submatrix[row][k];
-        //   submatrix[row][j] /= submatrix[row][k];
-        // }
-        u[k] = 1.;
-        submatrix[row][k] = 1.;
-        updateTimeCalc();
+          if (k >= j_gl * R3 && k <= j_gl * R3 + R3) {
+            u[k-offset] = 1.;
+            submatrix[row][k] = 1.;
+          }
 
-        // printf("U to send: ");
-        // for (int i = 0; i < N+1; i++) printf("%f ", u[i]);
-        // printf("\n");
+          updateTimeCalc();
 
-        time_start = clock();
-        if (proc_rank != Q2-1) {
-          MPI_Send(u, N+1, MPI_DOUBLE, proc_rank + 1, 123, MPI_COMM_WORLD);
-        }
-        updateTimeComm();
+          // printf("U to send in proc [%d]: ", proc_rank);
+          // for (int i = 0; i < width; i++) printf("%f ", u[i]);
+          // printf("\n");
 
-        // Applying u row for submatrix.
-        time_start = clock();
+          time_start = clock();
+          if (proc_rank != Q2-1) {
+            MPI_Send(u, width, MPI_DOUBLE, proc_rank + 1, 123, MPI_COMM_WORLD);
+          }
+          updateTimeComm();
 
-        for (int j_gl = 0; j_gl < Q3; j_gl++) {
+          // Applying u row for submatrix.
+          time_start = clock();
+
           for (int i = row+1; i < R2; i++) {
             for (int j = j_gl * R3; j < j_gl * R3 + R3 && j < N+1; j++) {
               if (j < k+1) continue;
-              submatrix[i][j] -= submatrix[i][k] * u[j];
+              submatrix[i][j] -= submatrix[i][k] * u[j-offset];
             }
           }
-          // for (int j = k + 1; j < N+1; j++) {
-          //   submatrix[i][j] -= submatrix[i][k] * u[j];
-          // }
-        }
 
-        for (int i = row+1; i < R2; i++) {
-          submatrix[i][k] = 0.;
-        }
+          if (j_gl == Q3-1) { // TEMP: for last iteration only.
+            for (int i = row+1; i < R2; i++) {
+              submatrix[i][k] = 0.;
+            }
+          }
 
-        updateTimeCalc();
+          updateTimeCalc();
 
-        free(u);
+        } else if (proc_rank > k / R2_global) {
 
-      } else if (proc_rank > k / R2_global) {
+          // printf("proc %d  k %d  j_gl %d as slave\n", proc_rank, k, j_gl);
 
-        // printf("proc %d  is to accept U\n", proc_rank);
+          time_start = clock();
+          MPI_Recv(u, width, MPI_DOUBLE, proc_rank - 1, 123, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
-        double* u = (double*) malloc((N+1) * sizeof(double));
-        time_start = clock();
-        MPI_Recv(u, N+1, MPI_DOUBLE, proc_rank-1, 123, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+          // Sending to the next process first.
+          if (proc_rank < Q2-1) {
+            // Translating the row further.
+            MPI_Send(u, width, MPI_DOUBLE, proc_rank + 1, 123, MPI_COMM_WORLD);
+          }
+          updateTimeComm();
 
-        // Sending to the next process first.
-        if (proc_rank < Q2-1) {
-          // Translating the row further.
-          MPI_Send(u, N+1, MPI_DOUBLE, proc_rank + 1, 123, MPI_COMM_WORLD);
-        }
-        updateTimeComm();
-
-        // Applying u row for submatrix.
-        time_start = clock();
-        for (int j_gl = 0; j_gl < Q3; j_gl++) {
+          // Applying u row for submatrix.
+          time_start = clock();
           for (int i = 0; i < R2; i++) {
             for (int j = j_gl * R3; j < j_gl * R3 + R3 && j < N + 1; j++) {
               if (j < k+1) continue;
-              submatrix[i][j] -= submatrix[i][k] * u[j];
+              submatrix[i][j] -= submatrix[i][k] * u[j-offset];
             }
           }
+
+          if (j_gl == Q3-1) { // TEMP: for last iteration only.
+            for (int i = 0; i < R2; i++) {
+              submatrix[i][k] = 0.;
+            }
+          }
+          updateTimeCalc();
+
         }
 
-        for (int i = 0; i < R2; i++) {
-          submatrix[i][k] = 0.;
-        }
-        updateTimeCalc();
-
-        // printf("U applied in non-ROOT process:\n");
-        // for (int i = 0; i < R2; i++) {
-        //   for (int j = 0; j < N+1; j++) {
-        //     printf("%f ", submatrix[i][j]);
-        //   }
-        //   printf("\n");
-        // }
+        MPI_Barrier(MPI_COMM_WORLD);
+        // Why does it fail here? WHY?
+        // free(u);
       }
-      MPI_Barrier(MPI_COMM_WORLD);
     }
   }
 }
@@ -349,13 +364,14 @@ int main(int argc, char** argv) {
   printf("[%d] total COMMUNICATION time:  %fs\n", proc_rank, time_communications / CLOCKS_PER_SEC);
   printf("[%d] total CALCULATION time:   %fs\n", proc_rank, time_calculations / CLOCKS_PER_SEC);
 
-  if (proc_rank) {
+  if (proc_rank == ROOT) {
     free(underA);
     free(A);
-  } else {
-    free(underSubmatrix);
-    free(submatrix);
+    free(underB);
+    free(B);
   }
+  free(underSubmatrix);
+  free(submatrix);
 
   MPI_Finalize();
 
