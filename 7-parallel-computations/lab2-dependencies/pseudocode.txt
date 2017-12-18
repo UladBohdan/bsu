@@ -1,0 +1,16 @@
+for(k=0;k<K;k=k+1)
+{
+  for (i=1;i<=n;i=i+1)
+  {
+    x[k+1][i]=b[i];
+    for (j=i+1;j<=n;j=j+1)
+    {
+      x[k+1][i]=x[k+1][i]-a[i][j]*x[k][j]
+    }
+    for (j=1;j<i;j=j+1)
+    {
+      x[k+1][i]=x[k+1][i]-a[i][j]*x[k+1][j]
+    }
+    x[k+1][i]=x[k+1][i]/a[i][i]
+  }
+}
