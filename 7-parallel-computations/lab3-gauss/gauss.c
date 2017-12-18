@@ -82,17 +82,20 @@ void printMatrix(double** A, int N) {
 void checkCorrectness() {
   // A is a generated matrix.
   // B contains the answer.
+  long double mx_norm = 0.;
   for (int i = 0; i < N; i++) {
     long double val = 0;
     for (int j = 0; j < N; j++) {
       val += A[i][j] * B[j][N];
     }
-    if (fabsl(val - A[i][N]) > EPS) {
-      printf("%sCHECK FAILED with value %Lf%s\n", COLOUR_RED, fabsl(val - A[i][N]), COLOUR_DEFAULT);
+    long double fa = fabsl(val - A[i][N]);
+    if (fa > mx_norm) mx_norm = fa;
+    if (fa > EPS) {
+      printf("%sCHECK FAILED with value %Lf%s\n", COLOUR_RED, fa, COLOUR_DEFAULT);
       return;
     }
   }
-  printf("%sCHECK PASSED.%s\n", COLOUR_GREEN, COLOUR_DEFAULT);
+  printf("%sCHECK PASSED with NORM %.15Lf%s\n", COLOUR_GREEN, mx_norm, COLOUR_DEFAULT);
 }
 
 void runGauss(int proc_rank) {
