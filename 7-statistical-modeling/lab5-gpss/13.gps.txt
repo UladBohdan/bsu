@@ -1,0 +1,35 @@
+kHours VARIABLE 1
+kSeconds VARIABLE V$kHours#60#60
+t1 VARIABLE 15
+t2 VARIABLE 10
+FirstMean VARIABLE 120
+FirstVariation VARIABLE 10
+SecondMean VARIABLE 40
+SecondVariation VARIABLE 5
+b VARIABLE 16
+EPS VARIABLE 4
+FirstStackSize VARIABLE 10
+SecondStackSize VARIABLE 10
+
+FirstWaiting QTABLE FirstQueue,1,1,10
+
+GENERATE V$t1
+QUEUE FirstQueue
+ASSEMBLE V$FirstStackSize
+DEPART FirstQueue
+TRANSFER ,exec
+
+GENERATE V$t2
+QUEUE SecondQueue
+ASSEMBLE V$SecondStackSize
+DEPART SecondQueue
+TRANSFER ,exec
+
+exec ASSEMBLE 2
+ADVANCE b,EPS
+ADVANCE V$FirstMean,V$FirstVariation
+TERMINATE
+
+GENERATE V$kSeconds
+TERMINATE 1
+START 1
