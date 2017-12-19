@@ -215,3 +215,5 @@ TSWLatexianTemp*
 
 # expex forward references with \gathertags
 *-tags.tex
+
+.ipynb_checkpoints
