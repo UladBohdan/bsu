@@ -70,14 +70,14 @@ INSERT INTO metrics VALUES(11, 9, 'electricity', 98, to_date('09-08-2017', 'dd-m
 INSERT INTO metrics VALUES(12, 10, 'water', 24, to_date('11-08-2017', 'dd-mm-yyyy'));
 COMMIT;
 
--- id / name / period / period_start
-INSERT INTO tax_payments VALUES(1, 'annual', 'year', to_date('01-01-2017', 'dd-mm-yyyy'));
-INSERT INTO tax_payments VALUES(2, 'area', 'year', to_date('01-01-2017', 'dd-mm-yyyy'));
-INSERT INTO tax_payments VALUES(3, 'property', 'year', to_date('01-01-2017', 'dd-mm-yyyy'));
-INSERT INTO tax_payments VALUES(4, 'electricity', 'month', to_date('01-10-2017', 'dd-mm-yyyy'));
-INSERT INTO tax_payments VALUES(5, 'water', 'month', to_date('01-10-2017', 'dd-mm-yyyy'));
-INSERT INTO tax_payments VALUES(6, 'electricity', 'month', to_date('01-11-2017', 'dd-mm-yyyy'));
-INSERT INTO tax_payments VALUES(7, 'water', 'month', to_date('01-11-2017', 'dd-mm-yyyy'));
+-- id / name / period / period_start / amount
+INSERT INTO tax_payments VALUES(1, 'annual', 'year', to_date('01-01-2017', 'dd-mm-yyyy'), 7000);
+INSERT INTO tax_payments VALUES(2, 'area', 'year', to_date('01-01-2017', 'dd-mm-yyyy'), 6000);
+INSERT INTO tax_payments VALUES(3, 'property', 'year', to_date('01-01-2017', 'dd-mm-yyyy'), 8300);
+INSERT INTO tax_payments VALUES(4, 'electricity', 'month', to_date('01-10-2017', 'dd-mm-yyyy'), 100);
+INSERT INTO tax_payments VALUES(5, 'water', 'month', to_date('01-10-2017', 'dd-mm-yyyy'), 50);
+INSERT INTO tax_payments VALUES(6, 'electricity', 'month', to_date('01-11-2017', 'dd-mm-yyyy'), 102);
+INSERT INTO tax_payments VALUES(7, 'water', 'month', to_date('01-11-2017', 'dd-mm-yyyy'), 51);
 COMMIT;
 
 -- id / subject_status / type / value / tax_payment_id
