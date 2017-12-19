@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta content='width=device-width, initial-scale=1' name='viewport'>
+  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.6.1/css/bulma.min.css">
+  <link rel="stylesheet" type="text/css" href="/static/styles.css">
+  <script src="/static/scripts.js"></script>
+</head>
+<body>
+  <br />
+  <h1 class="title is-1">Mushrooms classifier</h1>
+  <img src="/static/images/mushroom.jpg" width=20%/>
+  <div id="trainSection">
+    <button onclick="train()" class="button is-danger row">Train!</button>
+    <div id="trainResponse" class="row"></div>
+  </div>
+  <br>
+  <div id="validateSection" class="no-display">
+    <button onclick="validate()" class="button is-success row">Validate!</button>
+    <div id="validateResponse" class="row"></div>
+  </div>
+  <br>
+  <div id="recognizeSection" class="no-display">
+    <b>Sample mushrooms for recognition:</b>
+    <br>
+    <small>cap-shape,cap-surface,cap-color,bruises,odor,gill-attachment,gill-spacing,gill-size,gill-color,stalk-shape,stalk-root,stalk-surface-above-ring,stalk-surface-below-ring,stalk-color-above-ring,stalk-color-below-ring,veil-type,veil-color,ring-number,ring-type,spore-print-color,population,habitat
+    </small>
+    <br><br>
+    <div id="mushrooms-to-recognize"></div>
+  </div>
+</body>
+</html>
