@@ -1,0 +1,88 @@
+\documentclass[12pt,a4paper]{extarticle}
+\usepackage[utf8]{inputenc}
+\usepackage[left=3cm,right=1.5cm,
+top=2cm,bottom=2cm,bindingoffset=0cm]{geometry}
+\usepackage[english,russian]{babel}
+\usepackage[pdftex]{graphicx}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{verbatim}
+
+\tolerance=1
+\emergencystretch=\maxdimen
+\hyphenpenalty=10000
+\hbadness=10000
+
+\pagenumbering{gobble}
+\begin{document}
+	\begin{center}
+			БЕЛАРУСКІ ДЗЯРЖАЎНЫ ЎНІВЕРСІТЭТ \\
+			Факультэт прыкладной матэматыкі і інфарматыкі \\
+			Кафедра дыскрэтнай матэматыкі і алгарытмікі \\
+	\end{center}
+	\vspace{30pt}
+	\begin{flushright}
+		\textbf{Зацвярджаю} \\
+		Загадчык кафедры \underline{\hspace{150pt}} \\
+		``\underline{\hspace{25pt}}'' \underline{\hspace{70pt}} 20 \underline{\hspace{25pt}} \\
+	\end{flushright}
+	\vspace{30pt}
+	\begin{center}
+		\textbf{
+			Заданне на практыку \\
+			па спецыяльнасці ``інфарматыка'' \\
+		}
+	\end{center}
+	\vspace{10pt}
+	Студэнту \underline{\hspace{120pt}\textit{Богдану Уладзіславу}\hspace{120pt}} \\
+	\renewcommand{\labelenumii}{\arabic{enumi}.\arabic{enumii}.}
+	\begin{enumerate}
+		\item Тэма практыкі: \underline{\textit{Рэканструкцыя паверхні па дадзеных з беспілотных}} \\
+		\underline{\textit{лятальных апаратаў}}
+		\item Спіс рэкамендаванай літэратуры:
+			\begin{itemize}
+				\item А.В. Тузиков, С.А Шейнин, Д.В. Жук. Математическая морфология, моменты,
+				стереоoбработка: избранные вопросы обработки и анализа цифровых изображений. Минск, Белорус. наука, 2006.-198с
+				\item Jiaxin Li, Yingcai Bi, Menglu Lan, Hailong Qin, Mo Shan, Feng Lin, and Ben M. Chen.
+				Real-time simultaneous localization and mapping for uav: A survey. 2016.
+				\item Cesar Cadena, Luca Carlone, Henry Carrillo, Yasir Latif, Davide Scaramuzza,
+				Jose Neira, Ian D. Reid, and John J. Leonard. Simultaneous localization and mapping:
+				Present, future, and the robust-perception age. CoRR, abs/1606.05830, 2016.
+				\item Morgan Quigley, Ken Conley, Brian P. Gerkey, Josh Faust, Tully Foote, Jeremy Leibs,
+				Rob Wheeler, and Andrew Y. Ng. Ros: an open-source robot operating system.
+				In ICRA Workshop on Open Source Software, 2009.
+			\end{itemize}
+		\item Пералік пытанняў, якія падлягаюць распрацоўцы альбо кароткі змест разлікова-тлумачальнай нататкі:
+			\begin{itemize}
+				\item вывучэнне рэкамендаванай літаратуры;
+				\item агляд існуючых SLAM-рэалізацыяў, правядзенне эксперыментаў над імі, ацэнка магчымасцяў
+				па выманні дадатковых дадзеных з алгарытмаў;
+				\item распрацоўка ўласнага праграмнага забеспячэння на аснове існуючых рэалізацыяў
+				і бібліятэк;
+				\item ацэнка эфектыўнасці працы, агляд шляхоў аптымізацыі;
+				\item падрыхтоўка справаздачы.
+			\end{itemize}
+		\newpage
+		\item Прыкладны каляндарны графік:
+			\begin{itemize}
+				\item \textbf{люты (1-2 тыдні)} - азнаямленне з тэарэтычным матэрыялам і літаратурай па тэме,
+				агляд разнастайных рэалізацыяў SLAM-алгарытмаў
+				\item \textbf{люты (3 тыдзень)} - ацэнка магчымасцяў спалучэння аффлайн алгарытмаў рэканструкцыі
+				з SLAM-падыходамі
+				\item \textbf{сакавік (4-5 тыдні)} - распрацоўка праграмнага забеспячэння, якое б спалучала ў сабе
+				папярэдні запуск SLAM-алгарытма з паслядоўнай выгрузкай дадзеных для правядзення
+				паўнавартаснай шчыльнай рэканструкцыі паверхні
+				\item \textbf{сакавік (6 тыдзень)} - падсумаванне вынікаў,
+				афармленне тэарэтычнай і практычнай частак справаздачы
+			\end{itemize}
+		\item Кіраўнікі практыкі: \\
+		ад прадпрыемства \underline{Тузікаў А. В., генеральны дырэктар} \\
+		ад кафедры \underline{Жылка А. І., асістэнт} \\
+		\item Дата выдачы задання: \underline{5 лютага 2018 г.}
+		\item Тэрмін здачы справаздачы: \underline{22 сакавіка 2018 г.}
+	\end{enumerate}
+	\vspace{30pt}
+	Кіраўнік $\underset{\text{(подпіс, дата)}}{\underline{\hspace{150pt}}} \hspace{5pt}  /\underline{\hspace{5pt}\textit{Жылка А.І.}\hspace{5pt}}/$ \\
+	\vspace{15pt} \\
+	Подпіс студэнта $\underset{\text{(подпіс, дата)}}{\underline{\hspace{150pt}}}$
+\end{document}
