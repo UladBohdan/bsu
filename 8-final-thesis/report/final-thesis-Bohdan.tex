@@ -1,0 +1,73 @@
+\documentclass[14pt]{extreport}
+
+\usepackage{geometry}
+ \geometry{
+ a4paper,
+ left=30mm,
+ right=15mm,
+ top=20mm,
+ bottom=20mm,
+ }
+
+\usepackage[utf8]{inputenc}
+\usepackage[russian]{babel}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{array}
+\usepackage{tocloft}
+\usepackage{etoc}
+\usepackage{etoolbox}
+\usepackage{indentfirst}
+\usepackage{multirow}
+\usepackage{ragged2e}
+\usepackage{url}
+
+\tolerance=1
+\emergencystretch=\maxdimen
+\hyphenpenalty=10000
+\hbadness=10000
+
+\usepackage{caption}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{subcaption}
+\graphicspath{ {images/} }
+
+\newcommand{\nextTitle}{String for Titles.}
+\newcommand{\cursection}{0}
+
+% These are to make TOC left-aligned.
+\renewcommand{\cftchapleader}{\cftdotfill{\cftdotsep}}
+\renewcommand{\cftchapfont}{\mdseries}
+\renewcommand{\cftchappagefont}{\mdseries}
+\cftpagenumbersoff{part}
+
+\makeatletter
+\bgroup
+\advance\@flushglue by \@tocrmarg
+\xdef\@tocrmarg{\the\@flushglue}%
+\egroup
+\makeatother
+% End of left-alignment.
+
+\begin{document}
+
+\input{titlepage.tex}
+
+\input{abstract.tex}
+
+\setcounter{page}{2}
+\input{contents.tex}
+
+\input{introduction.tex}
+
+\input{theory-general.tex}
+\input{theory-essentials.tex}
+\input{theory-slam.tex}
+\input{practice.tex}
+
+\input{conclusions.tex}
+
+\input{references.tex}
+
+\end{document}
