@@ -1,0 +1,19 @@
+---
+development:
+  cloud_name: dhgy4yket
+  api_key: '654187973722646'
+  api_secret: 4Qoerqfsd-L-6NbJ7KMwX7qkNEo
+  enhance_image_tag: true
+  static_image_support: false
+production:
+  cloud_name: dhgy4yket
+  api_key: '654187973722646'
+  api_secret: 4Qoerqfsd-L-6NbJ7KMwX7qkNEo
+  enhance_image_tag: true
+  static_image_support: true
+test:
+  cloud_name: dhgy4yket
+  api_key: '654187973722646'
+  api_secret: 4Qoerqfsd-L-6NbJ7KMwX7qkNEo
+  enhance_image_tag: true
+  static_image_support: false

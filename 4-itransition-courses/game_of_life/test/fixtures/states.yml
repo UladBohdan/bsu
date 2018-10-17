@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  state: MyString
+  rows: 1
+  cols: 1
+  generation: 1
+  session: 
+
+two:
+  state: MyString
+  rows: 1
+  cols: 1
+  generation: 1
+  session: 

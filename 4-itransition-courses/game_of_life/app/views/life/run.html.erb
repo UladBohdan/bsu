@@ -1,0 +1,47 @@
+<body ng-app="GameOfLife"
+      ng-controller="LifeCtrl"
+      ng-init="currentGeneration = <%=@server_data.generation%>; state = '<%=@server_data.state%>'; fillCells()">
+
+<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+              data-target="#bs-example-navbar-collapse-1" aria-expanded="false" ng-click="isCollapsed = !isCollapsed">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="#"><b>Conway's Game of Life</b></a>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1" uib-collapse="isCollapsed" >
+      <ul class="nav navbar-nav">
+        <li><a href="#" ng-click="requestState('random')">Randomize</a></li>
+        <li><a href="#" ng-click="requestState('glider')">Glider</a></li>
+        <li><a href="#" ng-click="requestState('glider_gun')">Glider Gun</a></li>
+        <li><a>Current generation: <b>{{currentGeneration}}</b></a></li>
+      </ul>
+      <div class="navbar-form navbar-left">
+        <div class="form-group">
+          <input ng-model="numberOfGenerations" class="form-control" placeholder="Number of generations">
+        </div>
+        <button class="btn btn-default" ng-if="numberOfGenerations" ng-click="countState()">
+          Go {{numberOfGenerations}} generation<span ng-if="numberOfGenerations > 1">s</span> forward!
+        </button>
+      </div>
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="#" ng-click="clearServer()">Clear</a></li>
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+
+<div class="panel panel-default" style="width: 95%; margin: 0 auto;">
+  <div class="panel-body" style="margin: 0 auto; ">
+    <canvas id="cells" width="1200px" height="510px"></canvas>
+  </div>
+</div>
+</body>
