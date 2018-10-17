@@ -1,3 +1,11 @@
-The repo mostly contains BSU/FAMCS labs (2014-2018) by Uladzislau Bohdan.
+![BSU](bsu-logo.png)
 
-Enjoy!
+## BSU projects and assignments
+
+#### Uladzislau Bohdan / Уладзіслаў Богдан
+
+#### Faculty of Applied Mathematics and Computer Science
+
+#### specialty "Informatics"
+
+#### September 2014 - June 2018
