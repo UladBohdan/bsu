@@ -1,4 +1,4 @@
-![BSU](bsu-logo.png)
+<img src="bsu-logo.png" height="120">
 
 ## BSU projects and assignments
 
